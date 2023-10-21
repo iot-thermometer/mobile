@@ -72,4 +72,8 @@ dependencies {
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+    implementation(libs.com.juul.kable.core)
+
+    implementation(libs.accompanist.permissions)
 }

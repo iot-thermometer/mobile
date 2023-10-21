@@ -1,4 +1,5 @@
 [versions]
+accompanist-permissions = "0.30.1"
 agp = "8.1.0"
 org-jetbrains-kotlin-android = "1.8.10"
 core-ktx = "1.9.0"
@@ -10,8 +11,10 @@ activity-compose = "1.7.0"
 compose-bom = "2023.03.00"
 hilt = "2.44"
 retrofit = "2.9.0"
+kable = "0.27.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +33,7 @@ ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"}
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt"}
+com-juul-kable-core = { module = "com.juul.kable:core", version.ref = "kable" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
