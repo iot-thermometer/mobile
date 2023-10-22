@@ -1,3 +1,0 @@
-[submodule "app/src/main/proto"]
-	path = app/src/main/proto
-	url = https://github.com/iot-thermometer/proto
