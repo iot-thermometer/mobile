@@ -12,6 +12,7 @@ class GetGrpcChannelUseCase @Inject constructor(
     operator fun invoke(): Channel =
         AndroidChannelBuilder
             .forAddress("srv3.enteam.pl", 3010)
+            .usePlaintext()
             .context(context.applicationContext)
             .build()
 }

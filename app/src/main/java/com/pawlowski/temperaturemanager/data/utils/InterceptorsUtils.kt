@@ -13,7 +13,7 @@ fun <T : AbstractStub<T>> T.addTokenHeader(token: String): T =
                         "authorization",
                         Metadata.ASCII_STRING_MARSHALLER,
                     ),
-                    "Bearer $token",
+                    token,
                 )
             },
         ),

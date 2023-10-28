@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <!-- Necessary to perform any Bluetooth classic or BLE communication, such as requesting a
     connection, accepting a connection, and transferring data. -->
     <uses-permission
@@ -19,6 +21,7 @@
 
 
     <application
+        android:usesCleartextTraffic="true"
         android:name=".TemperatureApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"

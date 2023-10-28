@@ -3,7 +3,9 @@ package com.pawlowski.temperaturemanager.domain.useCase
 import com.pawlowski.temperaturemanager.data.TokenRepository
 import com.pawlowski.temperaturemanager.data.dataProviders.LoginDataProvider
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class LoginRepository @Inject constructor(
     private val loginDataProvider: LoginDataProvider,
     private val tokenRepository: TokenRepository,

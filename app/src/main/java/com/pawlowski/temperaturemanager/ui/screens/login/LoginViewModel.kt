@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.data.dataProviders.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.domain.useCase.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,15 +51,20 @@ internal class LoginViewModel @Inject constructor(
 
     private fun loginClicked() {
         viewModelScope.launch {
-            state.value.let {
-                if (it.email.isNotBlank() && it.password.isNotBlank()) {
-                    loginRepository.login(
-                        email = it.email,
-                        password = it.password,
-                    )
+            runCatching {
+                state.value.let {
+                    if (it.email.isNotBlank() && it.password.isNotBlank()) {
+                        loginRepository.login(
+                            email = it.email,
+                            password = it.password,
+                        )
 
-                    Log.d("DEVICES_LIST", thermometerRepository.listDevices())
+                        Log.d("DEVICES_LIST", thermometerRepository.listDevices())
+                    }
                 }
+            }.onFailure {
+                ensureActive()
+                it.printStackTrace()
             }
         }
     }
@@ -66,13 +72,18 @@ internal class LoginViewModel @Inject constructor(
     private fun registerClicked() {
         viewModelScope.launch {
             state.value.let {
-                if (it.email.isNotBlank() && it.password.isNotBlank()) {
-                    loginRepository.register(
-                        email = it.email,
-                        password = it.password,
-                    )
+                kotlin.runCatching {
+                    if (it.email.isNotBlank() && it.password.isNotBlank()) {
+                        loginRepository.register(
+                            email = it.email,
+                            password = it.password,
+                        )
 
-                    Log.d("DEVICES_LIST", thermometerRepository.listDevices())
+                        Log.d("DEVICES_LIST", thermometerRepository.listDevices())
+                    }
+                }.onFailure {
+                    ensureActive()
+                    it.printStackTrace()
                 }
             }
         }
