@@ -1,15 +1,14 @@
 package com.pawlowski.temperaturemanager
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -48,7 +47,7 @@ internal class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     FeatureThatRequiresBluetoothPermission()
                 }
@@ -59,12 +58,10 @@ internal class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     @Composable
     private fun FeatureThatRequiresBluetoothPermission() {
-
         // Camera permission state
         val bluetoothScanPermissionState = rememberPermissionState(
             android.Manifest.permission.BLUETOOTH_SCAN,
         )
-
 
         if (bluetoothScanPermissionState.status.isGranted) {
             Column {
@@ -82,7 +79,7 @@ internal class MainActivity : ComponentActivity() {
                     // doesn't want to be asked again for this permission, explain that the
                     // permission is required
                     "Bluetooth scan permission required for this feature to be available. " +
-                            "Please grant the permission"
+                        "Please grant the permission"
                 }
                 Text(textToShow)
                 Button(onClick = { bluetoothScanPermissionState.launchPermissionRequest() }) {
@@ -106,28 +103,20 @@ internal class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .padding(top = 15.dp)
                     .fillMaxWidth(),
-            ){
+            ) {
                 items(state.value) {
                     AdvertisementItem(advertisement = it) {
-                        if(!bluetoothConnectPermissionState.status.isGranted) {
+                        if (!bluetoothConnectPermissionState.status.isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             bluetoothConnectPermissionState.launchPermissionRequest()
-                        }
-                        else {
+                        } else {
                             viewModel.sentDataToDevice(it)
                         }
                     }
                 }
             }
-
-            Text(text = "Last error: " + viewModel.errors.collectAsState().value)
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Services info: " + viewModel.discovered.collectAsState().value)
-
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,7 +126,7 @@ fun AdvertisementItem(
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier.padding(all = 10.dp)
+        modifier = Modifier.padding(all = 10.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(text = advertisement.name ?: "Unknown")
@@ -145,6 +134,3 @@ fun AdvertisementItem(
         }
     }
 }
-
-
-

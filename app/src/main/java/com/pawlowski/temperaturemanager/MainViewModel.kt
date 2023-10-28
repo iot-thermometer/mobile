@@ -14,31 +14,24 @@ import javax.inject.Inject
 @HiltViewModel
 internal class MainViewModel @Inject constructor(
     private val bleManager: BLEManager,
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow<List<AndroidAdvertisement>>(listOf())
     val state: StateFlow<List<AndroidAdvertisement>>
         get() = _state
 
-    val discovered = MutableStateFlow("")
-
-    val errors = MutableStateFlow("")
-
-
     fun sentDataToDevice(advertisement: AndroidAdvertisement) {
         viewModelScope.launch {
-            val services = try {
+            runCatching {
                 bleManager.connectToDevice(
                     advertisement = advertisement,
                     coroutineScope = viewModelScope,
                 )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ensureActive()
-                errors.value = e.message ?: "Some error"
-                ""
             }
-            discovered.value = services
+                .onFailure {
+                    it.printStackTrace()
+                    ensureActive()
+                }
         }
     }
 
@@ -50,5 +43,4 @@ internal class MainViewModel @Inject constructor(
                 }
         }
     }
-
 }
