@@ -19,9 +19,10 @@ android {
     compileSdk = 33
 
     sourceSets.getByName("main") {
-        setProtoPath(srcPath = "src/main/proto")
+        setProtoPath(srcPath = "src/main/proto/proto")
         java.srcDirs(
             "build/generated/source/proto/main/grpc",
+            "build/generated/source/proto/main/grpckt",
             "build/generated/source/proto/main/java",
         )
     }
@@ -130,6 +131,6 @@ fun Project.configureProtobuf() {
 
 fun AndroidSourceSet.setProtoPath(srcPath: String) {
     proto {
-        srcDir(srcPath)
+        setSrcDirs(listOf(srcPath))
     }
 }
