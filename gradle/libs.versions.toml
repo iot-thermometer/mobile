@@ -65,6 +65,8 @@ org-jetbrains-kotlinx-kotlinx-serialization-core = { module = "org.jetbrains.kot
 org-jetbrains-kotlinx-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json" }
 
 androidx-datastore = "androidx.datastore:datastore:1.0.0"
+security-crypto-datastore = "io.github.osipxd:security-crypto-datastore:1.0.0-beta01"
+
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

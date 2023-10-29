@@ -4,12 +4,15 @@ import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKeys
 import com.pawlowski.temperaturemanager.data.datastore.token.TokenDataStoreModel
 import com.pawlowski.temperaturemanager.data.datastore.token.TokenSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.osipxd.security.crypto.createEncrypted
 import javax.inject.Singleton
 
 private const val TOKEN_DATA_STORE_FILE_NAME = "tokenDataStore"
@@ -23,8 +26,15 @@ class DataStoreModule {
     fun tokenDataStore(
         tokenSerializer: TokenSerializer,
         application: Application,
-    ): DataStore<TokenDataStoreModel> = DataStoreFactory.create(
+    ): DataStore<TokenDataStoreModel> = DataStoreFactory.createEncrypted(
         serializer = tokenSerializer,
-        produceFile = { application.dataStoreFile(TOKEN_DATA_STORE_FILE_NAME) },
+        produceFile = {
+            EncryptedFile.Builder(
+                application.dataStoreFile(TOKEN_DATA_STORE_FILE_NAME),
+                application.applicationContext,
+                MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB,
+            ).build()
+        },
     )
 }

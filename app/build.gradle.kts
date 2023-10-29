@@ -102,6 +102,7 @@ dependencies {
     implementation(platform(libs.org.jetbrains.kotlinx.kotlinx.serialization.bom))
     implementation(libs.bundles.serialization)
     implementation(libs.androidx.datastore)
+    implementation(libs.security.crypto.datastore)
 }
 
 fun Project.configureProtobuf() {
