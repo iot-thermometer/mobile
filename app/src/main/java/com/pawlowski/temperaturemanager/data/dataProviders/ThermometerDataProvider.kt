@@ -1,7 +1,7 @@
 package com.pawlowski.temperaturemanager.data.dataProviders
 
-import com.pawlowski.temperaturemanager.data.TokenRepository
 import com.pawlowski.temperaturemanager.data.dataProviders.base.BaseAuthorizedDataProvider
+import com.pawlowski.temperaturemanager.data.repository.TokenRepository
 import com.pawlowski.temperaturemanager.data.service.ThermometerServiceProvider
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt

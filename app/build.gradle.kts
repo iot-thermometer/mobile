@@ -10,6 +10,7 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.google.protobuf.get().pluginId)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
 }
 
 configureProtobuf()
@@ -97,6 +98,10 @@ dependencies {
     implementation(libs.com.google.protobuf.protobuf.javalite)
 
     implementation(libs.bundles.navigation)
+
+    implementation(platform(libs.org.jetbrains.kotlinx.kotlinx.serialization.bom))
+    implementation(libs.bundles.serialization)
+    implementation(libs.androidx.datastore)
 }
 
 fun Project.configureProtobuf() {

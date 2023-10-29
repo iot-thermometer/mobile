@@ -1,6 +1,5 @@
-package com.pawlowski.temperaturemanager.domain.useCase
+package com.pawlowski.temperaturemanager.data.repository
 
-import com.pawlowski.temperaturemanager.data.TokenRepository
 import com.pawlowski.temperaturemanager.data.dataProviders.LoginDataProvider
 import javax.inject.Inject
 import javax.inject.Singleton

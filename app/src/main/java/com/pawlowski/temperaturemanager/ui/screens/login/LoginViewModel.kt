@@ -2,7 +2,7 @@ package com.pawlowski.temperaturemanager.ui.screens.login
 
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
-import com.pawlowski.temperaturemanager.domain.useCase.LoginRepository
+import com.pawlowski.temperaturemanager.data.repository.LoginRepository
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.Login.LoginDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ensureActive
