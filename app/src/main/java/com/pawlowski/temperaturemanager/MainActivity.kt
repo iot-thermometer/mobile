@@ -28,8 +28,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.juul.kable.AndroidAdvertisement
 import com.pawlowski.temperaturemanager.data.BLEManager
-import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
-import com.pawlowski.temperaturemanager.ui.screens.login.LoginViewModel
+import com.pawlowski.temperaturemanager.ui.navigation.RootComposable
 import com.pawlowski.temperaturemanager.ui.theme.TemperatureManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -42,8 +41,6 @@ internal class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainViewModel>()
 
-    private val loginViewModel by viewModels<LoginViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -54,10 +51,7 @@ internal class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     // FeatureThatRequiresBluetoothPermission()
-                    LoginScreen(
-                        state = loginViewModel.state.collectAsState().value,
-                        onEvent = loginViewModel::onEvent,
-                    )
+                    RootComposable()
                 }
             }
         }

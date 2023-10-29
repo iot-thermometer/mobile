@@ -95,6 +95,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.bundles.grpc)
     implementation(libs.com.google.protobuf.protobuf.javalite)
+
+    implementation(libs.bundles.navigation)
 }
 
 fun Project.configureProtobuf() {
