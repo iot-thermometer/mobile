@@ -7,4 +7,6 @@ data class HomeState(
     val devicesOverviewResource: Resource<List<DeviceWithOverview>>,
 )
 
-sealed interface HomeEvent
+sealed interface HomeEvent {
+    object AddNewDeviceClick : HomeEvent
+}

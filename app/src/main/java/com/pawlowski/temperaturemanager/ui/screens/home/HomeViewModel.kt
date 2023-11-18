@@ -6,9 +6,11 @@ import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.GetDevicesOverviewUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 internal class HomeViewModel @Inject constructor(
     private val getDevicesOverviewUseCase: GetDevicesOverviewUseCase,
 ) : BaseMviViewModel<HomeState, HomeEvent, Screen.Home.HomeDirection>(
@@ -30,5 +32,10 @@ internal class HomeViewModel @Inject constructor(
     }
 
     override fun onNewEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.AddNewDeviceClick -> {
+                pushNavigationEvent(Screen.Home.HomeDirection.SEARCH_DEVICES)
+            }
+        }
     }
 }
