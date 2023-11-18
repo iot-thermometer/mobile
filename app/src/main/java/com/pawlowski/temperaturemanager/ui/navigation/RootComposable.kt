@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginViewModel
+import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesScreen
+import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesViewModel
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashScreen
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashViewModel
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +38,17 @@ fun RootComposable() {
             splashViewModel.stateFlow.collectAsState()
             SplashScreen()
             splashViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
+        composable(route = Screen.SearchDevices.name) {
+            val searchViewModel = hiltViewModel<SearchDevicesViewModel>()
+            val state by searchViewModel.stateFlow.collectAsState()
+            SearchDevicesScreen(
+                state = state,
+                onEvent = {
+                    searchViewModel.onNewEvent(it)
+                },
+            )
+            searchViewModel.navigationFlow.observeNavigation(navController = navController)
         }
     }
 }
