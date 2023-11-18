@@ -2,13 +2,12 @@ package com.pawlowski.temperaturemanager.data
 
 import com.juul.kable.AndroidAdvertisement
 import com.juul.kable.Scanner
-import com.juul.kable.descriptorOf
 import com.juul.kable.peripheral
+import com.juul.kable.write
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,34 +32,40 @@ internal class BLEManager @Inject constructor() {
         .onStart {
             println("Started searching")
         }
-        .onEach {
-            println("Found $it")
-        }
         .map {
             advertisements[it.address] = it
             advertisements.values.toList()
         }
 
-    suspend fun connectToDevice(
+    suspend fun sendMessageToDevice(
         advertisement: AndroidAdvertisement,
-        coroutineScope: CoroutineScope,
+        token: String,
+        id: Long,
+        ssid: String,
+        password: String,
     ) {
-        val peripheral = coroutineScope
+        val peripheral = scope
             .peripheral(advertisement = advertisement) {
-                this.onServicesDiscovered {
-                    requestMtu(128)
+                onServicesDiscovered {
+                    requestMtu(100)
                 }
             }
 
         peripheral.connect()
 
-        val descriptor = descriptorOf(
-            service = SERVICE_ID,
-            characteristic = CHARACTERISTICS_ID,
-            descriptor = DESCRIPTOR_ID,
-        )
+        val characteristics = peripheral.services?.firstNotNullOfOrNull {
+            it.characteristics.firstOrNull {
+                it.properties.write
+            }
+        }!!
 
-        peripheral.write(descriptor, "a".toByteArray())
+        val textToSend =
+            "{\"ssid\":\"$ssid\",\"password\":\"$password\", \"token\":\"${token}\",\"id\":$id}"
+
+        peripheral.write(
+            characteristic = characteristics,
+            textToSend.toByteArray(),
+        )
 
         peripheral.disconnect()
     }
