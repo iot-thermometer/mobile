@@ -26,7 +26,9 @@ sealed interface Screen {
         override val name: String = "SearchDevices"
         override val directions: List<Direction> = SearchDevicesDirection.values().toList()
 
-        enum class SearchDevicesDirection(override val destination: Screen) : Direction
+        enum class SearchDevicesDirection(override val destination: Screen) : Direction {
+            HOME(Home),
+        }
     }
 
     object Splash : Screen {
