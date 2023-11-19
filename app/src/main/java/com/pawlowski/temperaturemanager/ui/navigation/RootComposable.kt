@@ -1,6 +1,5 @@
 package com.pawlowski.temperaturemanager.ui.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,6 +9,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.pawlowski.temperaturemanager.ui.screens.home.HomeScreen
+import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginViewModel
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesScreen
@@ -31,7 +32,12 @@ fun RootComposable() {
             loginViewModel.navigationFlow.observeNavigation(navController = navController)
         }
         composable(route = Screen.Home.name) {
-            Text(text = "Home")
+            val homeViewModel = hiltViewModel<HomeViewModel>()
+            HomeScreen(
+                state = homeViewModel.stateFlow.collectAsState().value,
+                onEvent = homeViewModel::onNewEvent,
+            )
+            homeViewModel.navigationFlow.observeNavigation(navController = navController)
         }
         composable(route = Screen.Splash.name) {
             val splashViewModel = hiltViewModel<SplashViewModel>()

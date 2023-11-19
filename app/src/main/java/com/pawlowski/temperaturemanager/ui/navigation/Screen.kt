@@ -17,14 +17,18 @@ sealed interface Screen {
         override val name: String = "Home"
         override val directions: List<Direction> = HomeDirection.values().toList()
 
-        enum class HomeDirection(override val destination: Screen) : Direction
+        enum class HomeDirection(override val destination: Screen) : Direction {
+            SEARCH_DEVICES(SearchDevices),
+        }
     }
 
     object SearchDevices : Screen {
         override val name: String = "SearchDevices"
         override val directions: List<Direction> = SearchDevicesDirection.values().toList()
 
-        enum class SearchDevicesDirection(override val destination: Screen) : Direction
+        enum class SearchDevicesDirection(override val destination: Screen) : Direction {
+            HOME(Home),
+        }
     }
 
     object Splash : Screen {
@@ -33,7 +37,7 @@ sealed interface Screen {
 
         enum class SplashDirection(override val destination: Screen) : Direction {
             LOGIN(Login),
-            HOME(SearchDevices),
+            HOME(Home),
         }
     }
 

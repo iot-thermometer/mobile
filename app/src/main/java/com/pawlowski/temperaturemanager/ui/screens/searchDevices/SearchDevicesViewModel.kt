@@ -3,6 +3,8 @@ package com.pawlowski.temperaturemanager.ui.screens.searchDevices
 import androidx.lifecycle.viewModelScope
 import com.juul.kable.AndroidAdvertisement
 import com.pawlowski.temperaturemanager.BaseMviViewModel
+import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.PairWithDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.ScanNearbyDevicesUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
@@ -19,6 +21,7 @@ internal class SearchDevicesViewModel @Inject constructor(
     BaseMviViewModel<SearchDevicesState, SearchDevicesEvent, Screen.SearchDevices.SearchDevicesDirection>(
         initialState = SearchDevicesState(
             devices = emptyList(),
+            isPairingInProgress = false,
         ),
     ) {
 
@@ -33,19 +36,36 @@ internal class SearchDevicesViewModel @Inject constructor(
         }
     }
 
-    fun pairWithDevice(advertisement: AndroidAdvertisement) {
+    private fun pairWithDevice(advertisement: AndroidAdvertisement) {
         viewModelScope.launch {
-            runCatching {
+            resourceFlow {
                 pairWithDeviceUseCase(
                     deviceName = "Nazwa",
                     ssid = "Wifi u Macka",
                     password = "",
                     advertisement = advertisement,
                 )
-            }.onFailure {
-                it.printStackTrace()
-            }.onSuccess {
-                println("Success")
+            }.collect {
+                when (it) {
+                    is Resource.Success -> {
+                        updateState {
+                            copy(isPairingInProgress = false)
+                        }
+                        pushNavigationEvent(direction = Screen.SearchDevices.SearchDevicesDirection.HOME)
+                    }
+
+                    is Resource.Error -> {
+                        updateState {
+                            copy(isPairingInProgress = false)
+                        }
+                    }
+
+                    is Resource.Loading -> {
+                        updateState {
+                            copy(isPairingInProgress = true)
+                        }
+                    }
+                }
             }
         }
     }

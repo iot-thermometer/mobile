@@ -16,12 +16,13 @@ sealed class Resource<out T> {
 
 fun <T> Resource<T>.getDataOrNull() = (this as? Resource.Success)?.data
 
-suspend inline fun <T> resourceFlow(
+inline fun <T> resourceFlow(
     crossinline action: suspend () -> T,
 ): Flow<Resource<T>> = flow {
     emit(Resource.Loading)
 
     emit(Resource.Success(action()))
 }.catch {
+    it.printStackTrace()
     emit(Resource.Error(it))
 }.flowOn(Dispatchers.IO)

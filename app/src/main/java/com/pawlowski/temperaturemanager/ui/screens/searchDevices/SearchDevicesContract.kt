@@ -4,6 +4,7 @@ import com.juul.kable.AndroidAdvertisement
 
 data class SearchDevicesState(
     val devices: List<AndroidAdvertisement>,
+    val isPairingInProgress: Boolean,
 )
 
 sealed interface SearchDevicesEvent {
