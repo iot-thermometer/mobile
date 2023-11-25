@@ -1,9 +1,12 @@
 package com.pawlowski.temperaturemanager.data.repository
 
-import com.juul.kable.AndroidAdvertisement
 import com.pawlowski.temperaturemanager.data.BLEManager
 import com.pawlowski.temperaturemanager.data.dataProviders.ThermometerDataProvider
+import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 internal class AddDeviceRepository @Inject constructor(
@@ -11,11 +14,14 @@ internal class AddDeviceRepository @Inject constructor(
     private val bleManager: BLEManager,
 ) {
 
+    private val selectedAdvertisementFlow: MutableStateFlow<BluetoothDeviceAdvertisement?> =
+        MutableStateFlow(null)
+
     suspend fun pairWithDevice(
         deviceName: String,
         ssid: String,
         password: String,
-        advertisement: AndroidAdvertisement,
+        bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
     ) {
         val device = thermometerDataProvider.createDevice(
             name = deviceName,
@@ -24,7 +30,7 @@ internal class AddDeviceRepository @Inject constructor(
         )
 
         bleManager.sendMessageToDevice(
-            advertisement = advertisement,
+            bluetoothDeviceAdvertisement = bluetoothDeviceAdvertisement,
             ssid = ssid,
             password = password,
             id = device.id,
@@ -32,5 +38,13 @@ internal class AddDeviceRepository @Inject constructor(
         )
     }
 
-    fun scanNearbyDevices(): Flow<List<AndroidAdvertisement>> = bleManager.getScannedDevices()
+    fun scanNearbyDevices(): Flow<List<BluetoothDeviceAdvertisement>> =
+        bleManager.getScannedDevices()
+
+    fun selectAdvertisement(advertisement: BluetoothDeviceAdvertisement) {
+        selectedAdvertisementFlow.value = advertisement
+    }
+
+    fun getSelectedAdvertisement(): StateFlow<BluetoothDeviceAdvertisement?> =
+        selectedAdvertisementFlow.asStateFlow()
 }

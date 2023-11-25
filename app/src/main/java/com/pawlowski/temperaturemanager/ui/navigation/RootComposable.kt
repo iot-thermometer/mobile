@@ -17,6 +17,8 @@ import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesSc
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesViewModel
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashScreen
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashViewModel
+import com.pawlowski.temperaturemanager.ui.screens.wifiInfo.WifiInfoScreen
+import com.pawlowski.temperaturemanager.ui.screens.wifiInfo.WifiInfoViewModel
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -55,6 +57,17 @@ fun RootComposable() {
                 },
             )
             searchViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
+        composable(route = Screen.WifiInfo.name) {
+            val wifiInfoViewModel = hiltViewModel<WifiInfoViewModel>()
+            val state by wifiInfoViewModel.stateFlow.collectAsState()
+            WifiInfoScreen(
+                state = state,
+                onEvent = {
+                    wifiInfoViewModel.onNewEvent(it)
+                },
+            )
+            wifiInfoViewModel.navigationFlow.observeNavigation(navController = navController)
         }
     }
 }

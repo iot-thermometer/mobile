@@ -6,5 +6,7 @@ sealed class BluetoothException : Exception() {
 
     object CharacteristicsNotFound : BluetoothException()
 
+    object MissingAdvertisement : BluetoothException()
+
     data class Other(val status: String) : BluetoothException()
 }

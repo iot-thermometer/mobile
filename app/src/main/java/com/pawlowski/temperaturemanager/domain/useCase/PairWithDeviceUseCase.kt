@@ -1,7 +1,7 @@
 package com.pawlowski.temperaturemanager.domain.useCase
 
-import com.juul.kable.AndroidAdvertisement
 import com.pawlowski.temperaturemanager.data.repository.AddDeviceRepository
+import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import javax.inject.Inject
 
 internal class PairWithDeviceUseCase @Inject constructor(
@@ -12,13 +12,13 @@ internal class PairWithDeviceUseCase @Inject constructor(
         deviceName: String,
         ssid: String,
         password: String,
-        advertisement: AndroidAdvertisement,
+        bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
     ) {
         addDeviceRepository.pairWithDevice(
             deviceName = deviceName,
             ssid = ssid,
             password = password,
-            advertisement = advertisement,
+            bluetoothDeviceAdvertisement = bluetoothDeviceAdvertisement,
         )
     }
 }

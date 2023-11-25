@@ -6,6 +6,7 @@ import com.juul.kable.peripheral
 import com.juul.kable.read
 import com.juul.kable.write
 import com.pawlowski.temperaturemanager.domain.BluetoothException
+import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ internal class BLEManager @Inject constructor() {
 
     private val advertisements = hashMapOf<String, AndroidAdvertisement>()
 
-    fun getScannedDevices(): Flow<List<AndroidAdvertisement>> = scanner
+    fun getScannedDevices(): Flow<List<BluetoothDeviceAdvertisement>> = scanner
         .advertisements
         .onStart {
             println("Started searching")
@@ -37,15 +38,24 @@ internal class BLEManager @Inject constructor() {
         .map {
             advertisements[it.address] = it
             advertisements.values.toList()
+                .map {
+                    BluetoothDeviceAdvertisement(
+                        name = it.name ?: "Unnamed",
+                        macAddress = it.address,
+                    )
+                }
         }
 
     suspend fun sendMessageToDevice(
-        advertisement: AndroidAdvertisement,
+        bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
         token: String,
         id: Long,
         ssid: String,
         password: String,
     ) {
+        val advertisement = advertisements[bluetoothDeviceAdvertisement.macAddress]
+            ?: throw BluetoothException.MissingAdvertisement
+
         val peripheral = scope
             .peripheral(advertisement = advertisement) {
                 onServicesDiscovered {

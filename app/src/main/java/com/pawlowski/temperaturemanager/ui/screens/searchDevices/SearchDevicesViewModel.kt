@@ -1,11 +1,9 @@
 package com.pawlowski.temperaturemanager.ui.screens.searchDevices
 
 import androidx.lifecycle.viewModelScope
-import com.juul.kable.AndroidAdvertisement
 import com.pawlowski.temperaturemanager.BaseMviViewModel
-import com.pawlowski.temperaturemanager.domain.Resource
-import com.pawlowski.temperaturemanager.domain.resourceFlow
-import com.pawlowski.temperaturemanager.domain.useCase.PairWithDeviceUseCase
+import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
+import com.pawlowski.temperaturemanager.domain.useCase.AdvertisementSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.ScanNearbyDevicesUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 internal class SearchDevicesViewModel @Inject constructor(
     private val scanNearbyDevicesUseCase: ScanNearbyDevicesUseCase,
-    private val pairWithDeviceUseCase: PairWithDeviceUseCase,
+    private val selectionUseCase: AdvertisementSelectionUseCase,
 ) :
     BaseMviViewModel<SearchDevicesState, SearchDevicesEvent, Screen.SearchDevices.SearchDevicesDirection>(
         initialState = SearchDevicesState(
@@ -36,44 +34,15 @@ internal class SearchDevicesViewModel @Inject constructor(
         }
     }
 
-    private fun pairWithDevice(advertisement: AndroidAdvertisement) {
-        viewModelScope.launch {
-            resourceFlow {
-                pairWithDeviceUseCase(
-                    deviceName = "Nazwa",
-                    ssid = "Wifi u Macka",
-                    password = "",
-                    advertisement = advertisement,
-                )
-            }.collect {
-                when (it) {
-                    is Resource.Success -> {
-                        updateState {
-                            copy(isPairingInProgress = false)
-                        }
-                        pushNavigationEvent(direction = Screen.SearchDevices.SearchDevicesDirection.HOME)
-                    }
-
-                    is Resource.Error -> {
-                        updateState {
-                            copy(isPairingInProgress = false)
-                        }
-                    }
-
-                    is Resource.Loading -> {
-                        updateState {
-                            copy(isPairingInProgress = true)
-                        }
-                    }
-                }
-            }
-        }
+    private fun chooseDevice(advertisement: BluetoothDeviceAdvertisement) {
+        selectionUseCase.selectAdvertisement(advertisement = advertisement)
+        pushNavigationEvent(Screen.SearchDevices.SearchDevicesDirection.WIFI_INFO)
     }
 
     override fun onNewEvent(event: SearchDevicesEvent) {
         when (event) {
             is SearchDevicesEvent.DeviceClick -> {
-                pairWithDevice(advertisement = event.advertisement)
+                chooseDevice(advertisement = event.advertisement)
             }
         }
     }

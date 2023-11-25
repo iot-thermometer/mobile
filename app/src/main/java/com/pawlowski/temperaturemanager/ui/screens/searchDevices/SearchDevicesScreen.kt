@@ -23,7 +23,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.juul.kable.AndroidAdvertisement
+import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 
 @Composable
 fun SearchDevicesScreen(
@@ -112,7 +112,7 @@ private fun ScanningDevices(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AdvertisementItem(
-    advertisement: AndroidAdvertisement,
+    advertisement: BluetoothDeviceAdvertisement,
     onClick: () -> Unit,
 ) {
     Card(
@@ -120,8 +120,8 @@ private fun AdvertisementItem(
         modifier = Modifier.padding(all = 10.dp),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(text = advertisement.name ?: "Unknown")
-            Text(text = advertisement.address)
+            Text(text = advertisement.name)
+            Text(text = advertisement.macAddress)
         }
     }
 }

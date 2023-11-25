@@ -1,6 +1,7 @@
 package com.pawlowski.temperaturemanager
 
 import androidx.lifecycle.ViewModel
+import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Direction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.FlowCollector
@@ -39,6 +40,10 @@ abstract class BaseMviViewModel<STATE, EVENT, DIRECTION : Direction>(
     abstract fun onNewEvent(event: EVENT)
 
     protected fun pushNavigationEvent(direction: DIRECTION) {
+        navigationChannel.trySend(direction)
+    }
+
+    protected fun pushNavigationEvent(direction: Back) {
         navigationChannel.trySend(direction)
     }
 }
