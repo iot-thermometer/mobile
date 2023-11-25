@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.data.repository
 
-import com.pawlowski.temperaturemanager.data.BLEManager
+import com.pawlowski.temperaturemanager.data.ble.IBLEManager
 import com.pawlowski.temperaturemanager.data.dataProviders.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 internal class AddDeviceRepository @Inject constructor(
     private val thermometerDataProvider: ThermometerDataProvider,
-    private val bleManager: BLEManager,
+    private val bleManager: IBLEManager,
 ) {
 
     private val selectedAdvertisementFlow: MutableStateFlow<BluetoothDeviceAdvertisement?> =
