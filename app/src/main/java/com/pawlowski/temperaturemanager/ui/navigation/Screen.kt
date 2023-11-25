@@ -27,7 +27,24 @@ sealed interface Screen {
         override val directions: List<Direction> = SearchDevicesDirection.values().toList()
 
         enum class SearchDevicesDirection(override val destination: Screen) : Direction {
-            HOME(Home),
+            WIFI_INFO(WifiInfo),
+        }
+    }
+
+    object WifiInfo : Screen {
+        override val name: String = "WifiInfo"
+        override val directions: List<Direction> = WifiInfoDirection.values().toList()
+
+        enum class WifiInfoDirection(
+            override val destination: Screen,
+            override val popUpTo: Screen? = null,
+            override val popUpToInclusive: Boolean = false,
+        ) : Direction {
+            HOME(
+                destination = Home,
+                popUpTo = Home,
+                popUpToInclusive = false,
+            ),
         }
     }
 
@@ -50,6 +67,10 @@ sealed interface Screen {
 
 interface Direction {
     val destination: Screen
+    val popUpTo: Screen?
+        get() = null
+    val popUpToInclusive: Boolean
+        get() = false
 }
 
 object Back : Direction {

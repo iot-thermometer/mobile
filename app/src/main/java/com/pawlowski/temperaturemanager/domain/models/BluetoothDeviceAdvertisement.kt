@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.domain.models
 
-data class BluetoothDevice(
+data class BluetoothDeviceAdvertisement(
     val name: String,
-    val address: String,
+    val macAddress: String,
 )
