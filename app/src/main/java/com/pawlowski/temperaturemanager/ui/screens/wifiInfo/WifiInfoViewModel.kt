@@ -9,9 +9,11 @@ import com.pawlowski.temperaturemanager.domain.useCase.AdvertisementSelectionUse
 import com.pawlowski.temperaturemanager.domain.useCase.PairWithDeviceUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 internal class WifiInfoViewModel @Inject constructor(
     private val selectionUseCase: AdvertisementSelectionUseCase,
     private val pairWithDeviceUseCase: PairWithDeviceUseCase,
