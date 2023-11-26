@@ -97,6 +97,11 @@ private fun Flow<Direction>.observeNavigation(navController: NavController) {
                 else -> {
                     navController.navigate(route = direction.destination.name) {
                         launchSingleTop = true
+                        direction.popUpTo?.let {
+                            popUpTo(route = it.name) {
+                                inclusive = direction.popUpToInclusive
+                            }
+                        }
                     }
                 }
             }
