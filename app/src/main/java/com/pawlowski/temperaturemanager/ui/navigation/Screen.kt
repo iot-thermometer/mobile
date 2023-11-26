@@ -8,8 +8,16 @@ sealed interface Screen {
         override val name: String = "Login"
         override val directions: List<Direction> = LoginDirection.values().toList()
 
-        enum class LoginDirection(override val destination: Screen) : Direction {
-            HOME(destination = Home),
+        enum class LoginDirection(
+            override val destination: Screen,
+            override val popUpTo: Screen? = null,
+            override val popUpToInclusive: Boolean = false,
+        ) : Direction {
+            HOME(
+                destination = Home,
+                popUpTo = Login,
+                popUpToInclusive = true,
+            ),
         }
     }
 
@@ -52,9 +60,15 @@ sealed interface Screen {
         override val name: String = "Splash"
         override val directions: List<Direction> = SplashDirection.values().toList()
 
-        enum class SplashDirection(override val destination: Screen) : Direction {
+        enum class SplashDirection(
+            override val destination: Screen,
+        ) : Direction {
             LOGIN(Login),
             HOME(Home),
+            ;
+
+            override val popUpTo: Screen? = Splash
+            override val popUpToInclusive: Boolean = true
         }
     }
 
