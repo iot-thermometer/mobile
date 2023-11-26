@@ -9,18 +9,22 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginViewModel
+import com.pawlowski.temperaturemanager.ui.screens.noBluetoothPermission.NoBluetoothPermissionScreen
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesScreen
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesViewModel
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashScreen
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashViewModel
 import com.pawlowski.temperaturemanager.ui.screens.wifiInfo.WifiInfoScreen
 import com.pawlowski.temperaturemanager.ui.screens.wifiInfo.WifiInfoViewModel
+import com.pawlowski.temperaturemanager.ui.utils.rememberBluetoothMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RootComposable() {
     val navController = rememberNavController()
@@ -49,13 +53,22 @@ fun RootComposable() {
         }
         composable(route = Screen.SearchDevices.name) {
             val searchViewModel = hiltViewModel<SearchDevicesViewModel>()
-            val state by searchViewModel.stateFlow.collectAsState()
-            SearchDevicesScreen(
-                state = state,
-                onEvent = {
-                    searchViewModel.onNewEvent(it)
-                },
-            )
+
+            val permissionsGranted =
+                rememberBluetoothMultiplePermissionsState().allPermissionsGranted
+
+            if (permissionsGranted) {
+                val state by searchViewModel.stateFlow.collectAsState()
+                SearchDevicesScreen(
+                    state = state,
+                    onEvent = {
+                        searchViewModel.onNewEvent(it)
+                    },
+                )
+            } else {
+                NoBluetoothPermissionScreen()
+            }
+
             searchViewModel.navigationFlow.observeNavigation(navController = navController)
         }
         composable(route = Screen.WifiInfo.name) {
