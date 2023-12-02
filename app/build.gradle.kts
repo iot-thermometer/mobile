@@ -103,6 +103,8 @@ dependencies {
     implementation(libs.bundles.serialization)
     implementation(libs.androidx.datastore)
     implementation(libs.security.crypto.datastore)
+
+    implementation(libs.lottie)
 }
 
 fun Project.configureProtobuf() {

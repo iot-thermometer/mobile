@@ -23,6 +23,8 @@ hilt-navigation-compose = "1.0.0"
 
 kotlinx-serialization = "1.5.1"
 
+lottie = "5.2.0"
+
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -66,6 +68,8 @@ org-jetbrains-kotlinx-kotlinx-serialization-json = { module = "org.jetbrains.kot
 
 androidx-datastore = "androidx.datastore:datastore:1.0.0"
 security-crypto-datastore = "io.github.osipxd:security-crypto-datastore:1.0.0-beta01"
+
+lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 
 
 [plugins]
