@@ -33,6 +33,13 @@ internal class WifiInfoViewModel @Inject constructor(
         }
     }
 
+//    fun onSsidInputChange(newSsidInput: String) {
+//        updateState {
+//            WifiInfoState.Content(
+//                ssidInput = newSsidInput,
+//            )
+//        }
+//    }
     override fun onNewEvent(event: WifiInfoEvent) {
         when (event) {
             is WifiInfoEvent.ContinueClick -> onContinue()
@@ -71,7 +78,7 @@ internal class WifiInfoViewModel @Inject constructor(
             }
 
             val isSsidCorrect = ssid.isNotBlank()
-            val isPasswordCorrect = ssid.isNotBlank()
+            val isPasswordCorrect = password.isNotBlank()
 
             when {
                 !isPasswordCorrect && !isSsidCorrect -> {

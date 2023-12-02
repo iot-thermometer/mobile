@@ -27,6 +27,7 @@ fun LoginScreen(
             onValueChange = {
                 onEvent(LoginEvent.EmailChange(it))
             },
+            singleLine = true
         )
 
         TextField(
@@ -34,6 +35,7 @@ fun LoginScreen(
             onValueChange = {
                 onEvent(LoginEvent.PasswordChange(it))
             },
+            singleLine = true
         )
 
         Button(onClick = { onEvent(LoginEvent.LoginClick) }) {
