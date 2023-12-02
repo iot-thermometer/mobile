@@ -9,4 +9,6 @@ data class HomeState(
 
 sealed interface HomeEvent {
     object AddNewDeviceClick : HomeEvent
+
+    data class DeviceClick(val deviceId: Long) : HomeEvent
 }

@@ -16,6 +16,8 @@ import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginViewModel
 import com.pawlowski.temperaturemanager.ui.screens.noBluetoothPermission.NoBluetoothPermissionScreen
+import com.pawlowski.temperaturemanager.ui.screens.readings.ReadingsScreen
+import com.pawlowski.temperaturemanager.ui.screens.readings.ReadingsViewModel
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesScreen
 import com.pawlowski.temperaturemanager.ui.screens.searchDevices.SearchDevicesViewModel
 import com.pawlowski.temperaturemanager.ui.screens.splash.SplashScreen
@@ -25,7 +27,6 @@ import com.pawlowski.temperaturemanager.ui.screens.wifiInfo.WifiInfoViewModel
 import com.pawlowski.temperaturemanager.ui.utils.rememberBluetoothMultiplePermissionsState
 import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RootComposable(
     isBluetoothEnabled: Boolean,
@@ -47,6 +48,14 @@ fun RootComposable(
                 onEvent = homeViewModel::onNewEvent,
             )
             homeViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
+        composable(route = Screen.Readings.name) {
+            val readingsViewModel = hiltViewModel<ReadingsViewModel>()
+            ReadingsScreen(
+                state = readingsViewModel.stateFlow.collectAsState().value,
+                onEvent = readingsViewModel::onNewEvent,
+            )
+            readingsViewModel.navigationFlow.observeNavigation(navController = navController)
         }
         composable(route = Screen.Splash.name) {
             val splashViewModel = hiltViewModel<SplashViewModel>()
@@ -113,7 +122,7 @@ private fun Flow<Direction>.observeNavigation(navController: NavController) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun ContentOrBluetoothInfo(
+private fun ContentOrBluetoothInfo(
     isBluetoothEnabled: Boolean,
     content: @Composable () -> Unit,
 ) {
