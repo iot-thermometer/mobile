@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.di
 
-import com.pawlowski.temperaturemanager.data.ble.FakeBLEManager
+import com.pawlowski.temperaturemanager.data.ble.BLEManager
 import com.pawlowski.temperaturemanager.data.ble.IBLEManager
 import dagger.Binds
 import dagger.Module
@@ -14,5 +14,5 @@ internal abstract class AppModuleBinds {
 
     @Binds
     @Singleton
-    abstract fun bleManager(bleManager: FakeBLEManager): IBLEManager
+    abstract fun bleManager(bleManager: BLEManager): IBLEManager
 }
