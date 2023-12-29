@@ -10,7 +10,6 @@ import com.thermometer.proto.CreateDeviceRequest
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ListReadingsRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -30,15 +29,13 @@ class ThermometerDataProvider @Inject constructor(
         it.toDomain()
     }
 
-    suspend fun listReadings(deviceId: Long): Flow<List<ReadingDomain>> {
-        return authorizedFlow(
+    suspend fun listReadings(deviceId: Long): List<ReadingDomain> {
+        return authorizedUnary(
             method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::listReadings,
             request = ListReadingsRequest.newBuilder()
                 .setId(deviceId)
                 .build(),
-        ).map {
-            it.readingsList.toDomain()
-        }
+        ).readingsList.toDomain()
     }
 
     suspend fun createDevice(
