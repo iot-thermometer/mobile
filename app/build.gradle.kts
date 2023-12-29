@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.google.protobuf.get().pluginId)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
+    id("com.google.gms.google-services")
 }
 
 configureProtobuf()
@@ -80,6 +81,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

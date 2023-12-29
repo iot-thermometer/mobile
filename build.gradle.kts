@@ -10,5 +10,6 @@ true // Needed to make the Suppress annotation work for the plugins block
 buildscript {
     dependencies {
         classpath(libs.com.google.protobuf.gradle.plugin)
+        classpath("com.google.gms:google-services:4.4.0")
     }
 }

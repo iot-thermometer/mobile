@@ -32,6 +32,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TemperatureManager"
         tools:targetApi="31">
+
+        <service
+            android:name=".NotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
