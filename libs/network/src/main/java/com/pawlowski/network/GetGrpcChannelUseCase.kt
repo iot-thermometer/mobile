@@ -1,4 +1,4 @@
-package com.pawlowski.temperaturemanager.data.channel
+package com.pawlowski.network
 
 import android.app.Application
 import io.grpc.Channel
@@ -8,11 +8,11 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-class GetGrpcChannelUseCase @Inject constructor(
+internal class GetGrpcChannelUseCase @Inject constructor(
     private val context: Application,
-) {
+) : IGetGrpcChannelUseCase {
 
-    operator fun invoke(): Channel =
+    override operator fun invoke(): Channel =
         OkHttpChannelBuilder
             .forAddress("srv3.enteam.pl", 3010)
             .sslSocketFactory(noTrustedContext().socketFactory)

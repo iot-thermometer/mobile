@@ -1,13 +1,13 @@
 package com.pawlowski.temperaturemanager.data.service
 
-import com.pawlowski.temperaturemanager.data.channel.GetGrpcChannelUseCase
+import com.pawlowski.network.IGetGrpcChannelUseCase
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ThermometerServiceProvider @Inject constructor(
-    private val getGrpcChannelUseCase: GetGrpcChannelUseCase,
+    private val getGrpcChannelUseCase: IGetGrpcChannelUseCase,
 ) {
     private val service by lazy {
         getGrpcChannelUseCase().let { channel ->
