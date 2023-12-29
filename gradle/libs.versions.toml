@@ -26,6 +26,8 @@ kotlinx-serialization = "1.5.1"
 
 lottie = "5.2.0"
 
+hilt-workmanager = "1.0.0"
+
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -72,7 +74,9 @@ androidx-datastore = "androidx.datastore:datastore:1.0.0"
 security-crypto-datastore = "io.github.osipxd:security-crypto-datastore:1.0.0-beta01"
 
 lottie = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
-
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.7.1" }
+hilt-workmanager = { module = "androidx.hilt:hilt-work", version.ref = "hilt-workmanager" }
+hilt-workmanager-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-workmanager" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

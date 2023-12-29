@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Temperature Manager"
 include(":app")
- 
+include(":notificationService")
