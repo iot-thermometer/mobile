@@ -3,9 +3,11 @@ package com.pawlowski.temperaturemanager.data
 import com.pawlowski.datastore.IAuthTokenRepository
 import com.pawlowski.network.BaseAuthorizedDataProvider
 import com.pawlowski.network.IThermometerServiceProvider
+import com.pawlowski.temperaturemanager.domain.models.AlertDomain
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.thermometer.proto.CreateDeviceRequest
+import com.thermometer.proto.ListAlertsRequest
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ListReadingsRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt
@@ -48,4 +50,13 @@ class ThermometerDataProvider @Inject constructor(
             .setReadingInterval(readingInterval)
             .build(),
     ).device.toDomain()
+
+    suspend fun listAlerts(deviceId: Long): List<AlertDomain> = authorizedUnary(
+        method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::listAlerts,
+        request = ListAlertsRequest.newBuilder().build(),
+    ).alertsList.filter {
+        it.deviceID == deviceId
+    }.map {
+        it.toDomain()
+    }
 }

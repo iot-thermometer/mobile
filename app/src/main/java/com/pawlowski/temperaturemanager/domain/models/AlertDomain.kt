@@ -1,7 +1,7 @@
 package com.pawlowski.temperaturemanager.domain.models
 
 data class AlertDomain(
-    val id: String,
+    val id: Long,
     val name: String,
     val soilMoistureMin: Float,
     val soilMoistureMax: Float,
