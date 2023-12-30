@@ -18,7 +18,7 @@ configureProtobuf()
 
 android {
     namespace = "com.pawlowski.temperaturemanager"
-    compileSdk = 33
+    compileSdk = ProjectConfig.compileSdk
 
     sourceSets.getByName("main") {
         setProtoPath(srcPath = "src/main/proto/proto")
@@ -31,8 +31,8 @@ android {
 
     defaultConfig {
         applicationId = "com.pawlowski.temperaturemanager"
-        minSdk = 26
-        targetSdk = 33
+        minSdk = ProjectConfig.minSdk
+        targetSdk = ProjectConfig.targetSdk
         versionCode = 1
         versionName = "1.0"
 
@@ -62,7 +62,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = ProjectConfig.kotlinCompilerExtensions
     }
     packaging {
         resources {

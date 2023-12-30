@@ -3,18 +3,16 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     kotlin("kapt")
     alias(libs.plugins.com.google.dagger.hilt.android)
-    alias(libs.plugins.com.android.application)
+    id(libs.plugins.com.android.library.get().pluginId)
 }
 
 android {
     namespace = "com.pawlowski.notificationservice"
-    compileSdk = 33
+    compileSdk = ProjectConfig.compileSdk
 
     defaultConfig {
-        minSdk = 26
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = ProjectConfig.minSdk
+        targetSdk = ProjectConfig.targetSdk
 
         vectorDrawables {
             useSupportLibrary = true
