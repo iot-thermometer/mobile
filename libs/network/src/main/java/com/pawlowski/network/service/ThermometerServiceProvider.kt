@@ -1,6 +1,6 @@
-package com.pawlowski.temperaturemanager.data.service
+package com.pawlowski.network.service
 
-import com.pawlowski.network.IGetGrpcChannelUseCase
+import com.pawlowski.network.channel.IGetGrpcChannelUseCase
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import javax.inject.Inject
 import javax.inject.Singleton

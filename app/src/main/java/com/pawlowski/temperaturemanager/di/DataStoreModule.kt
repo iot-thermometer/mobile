@@ -6,8 +6,8 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
-import com.pawlowski.temperaturemanager.data.datastore.token.TokenDataStoreModel
-import com.pawlowski.temperaturemanager.data.datastore.token.TokenSerializer
+import com.pawlowski.network.datastore.TokenDataStoreModel
+import com.pawlowski.network.datastore.TokenSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

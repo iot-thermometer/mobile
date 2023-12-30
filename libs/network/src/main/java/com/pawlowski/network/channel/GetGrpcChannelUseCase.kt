@@ -1,4 +1,4 @@
-package com.pawlowski.network
+package com.pawlowski.network.channel
 
 import android.app.Application
 import io.grpc.Channel

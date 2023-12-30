@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.domain.useCase
 
-import com.pawlowski.temperaturemanager.data.repository.TokenRepository
+import com.pawlowski.network.datastore.TokenRepository
 import javax.inject.Inject
 
 class IsLoggedInUseCase @Inject constructor(

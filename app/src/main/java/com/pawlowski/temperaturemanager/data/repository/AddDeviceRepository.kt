@@ -1,7 +1,7 @@
 package com.pawlowski.temperaturemanager.data.repository
 
+import com.pawlowski.temperaturemanager.data.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.data.ble.IBLEManager
-import com.pawlowski.temperaturemanager.data.dataProviders.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

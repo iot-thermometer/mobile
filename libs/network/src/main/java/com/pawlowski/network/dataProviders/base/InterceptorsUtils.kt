@@ -1,10 +1,10 @@
-package com.pawlowski.temperaturemanager.data.utils
+package com.pawlowski.network.dataProviders.base
 
 import io.grpc.Metadata
 import io.grpc.stub.AbstractStub
 import io.grpc.stub.MetadataUtils
 
-fun <T : AbstractStub<T>> T.addTokenHeader(token: String): T =
+internal fun <T : AbstractStub<T>> T.addTokenHeader(token: String): T =
     this.withInterceptors(
         MetadataUtils.newAttachHeadersInterceptor(
             Metadata().apply {

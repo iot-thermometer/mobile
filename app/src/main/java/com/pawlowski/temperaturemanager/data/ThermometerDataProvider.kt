@@ -1,16 +1,14 @@
-package com.pawlowski.temperaturemanager.data.dataProviders
+package com.pawlowski.temperaturemanager.data
 
-import com.pawlowski.temperaturemanager.data.dataProviders.base.BaseAuthorizedDataProvider
-import com.pawlowski.temperaturemanager.data.repository.TokenRepository
-import com.pawlowski.temperaturemanager.data.service.ThermometerServiceProvider
-import com.pawlowski.temperaturemanager.data.toDomain
+import com.pawlowski.network.dataProviders.base.BaseAuthorizedDataProvider
+import com.pawlowski.network.datastore.TokenRepository
+import com.pawlowski.network.service.ThermometerServiceProvider
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.thermometer.proto.CreateDeviceRequest
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ListReadingsRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ThermometerDataProvider @Inject constructor(

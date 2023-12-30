@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.android.library.get().pluginId)
     id(libs.plugins.com.google.protobuf.get().pluginId)
+    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
 }
 
 configureProtobuf()
@@ -42,4 +43,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.bundles.grpc)
+    implementation(libs.androidx.datastore)
+    implementation(libs.security.crypto.datastore)
+    implementation(platform(libs.org.jetbrains.kotlinx.kotlinx.serialization.bom))
+    implementation(libs.bundles.serialization)
 }

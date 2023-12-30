@@ -1,6 +1,7 @@
 package com.pawlowski.temperaturemanager.data.repository
 
-import com.pawlowski.temperaturemanager.data.dataProviders.LoginDataProvider
+import com.pawlowski.network.dataProviders.LoginDataProvider
+import com.pawlowski.network.datastore.TokenRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

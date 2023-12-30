@@ -1,4 +1,4 @@
-package com.pawlowski.temperaturemanager.data.datastore.token
+package com.pawlowski.network.datastore
 
 import kotlinx.serialization.Serializable
 

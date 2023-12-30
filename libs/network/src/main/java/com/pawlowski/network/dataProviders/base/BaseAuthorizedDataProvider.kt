@@ -1,8 +1,7 @@
-package com.pawlowski.temperaturemanager.data.dataProviders.base
+package com.pawlowski.network.dataProviders.base
 
-import com.pawlowski.temperaturemanager.data.repository.TokenRepository
-import com.pawlowski.temperaturemanager.data.service.ThermometerServiceProvider
-import com.pawlowski.temperaturemanager.data.utils.addTokenHeader
+import com.pawlowski.network.datastore.TokenRepository
+import com.pawlowski.network.service.ThermometerServiceProvider
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import kotlinx.coroutines.flow.Flow
 

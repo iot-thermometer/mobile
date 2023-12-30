@@ -1,8 +1,7 @@
-package com.pawlowski.temperaturemanager.data.repository
+package com.pawlowski.network.datastore
 
 import androidx.datastore.core.DataStore
-import com.pawlowski.temperaturemanager.data.datastore.token.TokenDataStoreModel
-import com.pawlowski.temperaturemanager.domain.models.Token
+import com.pawlowski.network.Token
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton

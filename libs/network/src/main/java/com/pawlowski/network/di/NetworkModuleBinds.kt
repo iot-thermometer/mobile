@@ -1,7 +1,7 @@
 package com.pawlowski.network.di
 
-import com.pawlowski.network.GetGrpcChannelUseCase
-import com.pawlowski.network.IGetGrpcChannelUseCase
+import com.pawlowski.network.channel.GetGrpcChannelUseCase
+import com.pawlowski.network.channel.IGetGrpcChannelUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

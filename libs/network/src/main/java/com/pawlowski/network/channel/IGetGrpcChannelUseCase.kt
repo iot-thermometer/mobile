@@ -1,4 +1,4 @@
-package com.pawlowski.network
+package com.pawlowski.network.channel
 
 import io.grpc.Channel
 

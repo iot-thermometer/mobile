@@ -1,7 +1,7 @@
-package com.pawlowski.temperaturemanager.data.dataProviders
+package com.pawlowski.network.dataProviders
 
-import com.pawlowski.temperaturemanager.data.service.ThermometerServiceProvider
-import com.pawlowski.temperaturemanager.domain.models.Token
+import com.pawlowski.network.Token
+import com.pawlowski.network.service.ThermometerServiceProvider
 import com.thermometer.proto.LoginRequest
 import com.thermometer.proto.RegisterRequest
 import javax.inject.Inject
