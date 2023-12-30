@@ -17,4 +17,7 @@ sealed interface ReadingsState {
     ) : ReadingsState
 }
 
-sealed interface ReadingsEvent
+sealed interface ReadingsEvent {
+
+    object BackClick : ReadingsEvent
+}

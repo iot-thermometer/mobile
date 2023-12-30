@@ -9,5 +9,7 @@ data class SearchDevicesState(
 
 sealed interface SearchDevicesEvent {
 
+    object BackClick : SearchDevicesEvent
+
     data class DeviceClick(val advertisement: BluetoothDeviceAdvertisement) : SearchDevicesEvent
 }

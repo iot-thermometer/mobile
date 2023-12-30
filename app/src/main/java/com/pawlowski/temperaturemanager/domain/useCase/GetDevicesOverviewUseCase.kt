@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.domain.useCase
 
-import com.pawlowski.temperaturemanager.data.dataProviders.ThermometerDataProvider
+import com.pawlowski.temperaturemanager.data.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.domain.models.DeviceWithOverview
 import javax.inject.Inject
 

@@ -15,4 +15,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Temperature Manager"
 include(":app")
- 
+include(":notificationService")
+include(":libs:network")
+include(":libs:dataStore")

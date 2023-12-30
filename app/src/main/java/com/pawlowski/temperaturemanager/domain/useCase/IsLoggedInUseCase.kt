@@ -1,11 +1,11 @@
 package com.pawlowski.temperaturemanager.domain.useCase
 
-import com.pawlowski.temperaturemanager.data.repository.TokenRepository
+import com.pawlowski.datastore.IAuthTokenRepository
 import javax.inject.Inject
 
 class IsLoggedInUseCase @Inject constructor(
-    private val tokenRepository: TokenRepository,
+    private val authTokenRepository: IAuthTokenRepository,
 ) {
 
-    suspend operator fun invoke(): Boolean = tokenRepository.getToken() != null
+    suspend operator fun invoke(): Boolean = authTokenRepository.getToken() != null
 }

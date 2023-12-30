@@ -5,6 +5,7 @@ import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
 import com.pawlowski.temperaturemanager.domain.useCase.AdvertisementSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.ScanNearbyDevicesUseCase
+import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -49,6 +50,10 @@ internal class SearchDevicesViewModel @Inject constructor(
         when (event) {
             is SearchDevicesEvent.DeviceClick -> {
                 chooseDevice(advertisement = event.advertisement)
+            }
+
+            SearchDevicesEvent.BackClick -> {
+                pushNavigationEvent(Back)
             }
         }
     }

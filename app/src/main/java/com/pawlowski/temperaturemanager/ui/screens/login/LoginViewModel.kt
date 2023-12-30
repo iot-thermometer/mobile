@@ -1,8 +1,8 @@
 package com.pawlowski.temperaturemanager.ui.screens.login
 
 import androidx.lifecycle.viewModelScope
+import com.pawlowski.network.ILoginRepository
 import com.pawlowski.temperaturemanager.BaseMviViewModel
-import com.pawlowski.temperaturemanager.data.repository.LoginRepository
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.Login.LoginDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ensureActive
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository,
+    private val loginRepository: ILoginRepository,
 ) : BaseMviViewModel<LoginState, LoginEvent, LoginDirection>(
     initialState = LoginState(),
 ) {

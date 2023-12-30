@@ -1,37 +1,24 @@
-import com.android.build.api.dsl.AndroidSourceSet
-import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.proto
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    id(libs.plugins.com.android.application.get().pluginId)
+    id(libs.plugins.org.jetbrains.kotlin.android.get().pluginId)
     kotlin("kapt")
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.google.protobuf.get().pluginId)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
+    id("com.google.gms.google-services")
 }
-
-configureProtobuf()
 
 android {
     namespace = "com.pawlowski.temperaturemanager"
-    compileSdk = 33
-
-    sourceSets.getByName("main") {
-        setProtoPath(srcPath = "src/main/proto/proto")
-        java.srcDirs(
-            "build/generated/source/proto/main/grpc",
-            "build/generated/source/proto/main/grpckt",
-            "build/generated/source/proto/main/java",
-        )
-    }
+    compileSdk = ProjectConfig.compileSdk
 
     defaultConfig {
         applicationId = "com.pawlowski.temperaturemanager"
-        minSdk = 26
-        targetSdk = 33
+        minSdk = ProjectConfig.minSdk
+        targetSdk = ProjectConfig.targetSdk
         versionCode = 1
         versionName = "1.0"
 
@@ -61,7 +48,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = ProjectConfig.kotlinCompilerExtensions
     }
     packaging {
         resources {
@@ -72,6 +59,10 @@ android {
 
 dependencies {
 
+    implementation(project(":libs:network"))
+    implementation(project(":notificationService"))
+    implementation(project(":libs:dataStore"))
+
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
@@ -80,6 +71,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -101,48 +93,8 @@ dependencies {
 
     implementation(platform(libs.org.jetbrains.kotlinx.kotlinx.serialization.bom))
     implementation(libs.bundles.serialization)
-    implementation(libs.androidx.datastore)
-    implementation(libs.security.crypto.datastore)
 
-    implementation ("androidx.compose.material:material-icons-extended:1.3.1")
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.lottie)
-}
-
-fun Project.configureProtobuf() {
-    extensions.findByType<ProtobufExtension>()!!.apply {
-        protoc { artifact = libs.com.google.protobuf.protoc.get().toString() }
-
-        plugins {
-            id("grpc") {
-                artifact = libs.io.grpc.protoc.gen.grpc.java.get().toString()
-            }
-            id("grpckt") {
-                artifact = libs.io.grpc.protoc.gen.grpc.kotlin.get().toString()
-            }
-
-            generateProtoTasks {
-                all().forEach { task ->
-                    task.builtins {
-                        id("java") {
-                            option("lite")
-                        }
-                    }
-
-                    task.plugins {
-                        id("grpc") {
-                            option("lite")
-                        }
-                        id("grpckt")
-                    }
-                }
-            }
-        }
-    }
-}
-
-fun AndroidSourceSet.setProtoPath(srcPath: String) {
-    proto {
-        setSrcDirs(listOf(srcPath))
-    }
 }

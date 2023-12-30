@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsScreen
+import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsViewModel
 import com.pawlowski.temperaturemanager.ui.screens.bluetoothOff.BluetoothOffScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
@@ -66,7 +68,12 @@ fun RootComposable(
         composable(route = Screen.SearchDevices.name) {
             val searchViewModel = hiltViewModel<SearchDevicesViewModel>()
 
-            ContentOrBluetoothInfo(isBluetoothEnabled = isBluetoothEnabled) {
+            ContentOrBluetoothInfo(
+                isBluetoothEnabled = isBluetoothEnabled,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            ) {
                 val state by searchViewModel.stateFlow.collectAsState()
                 SearchDevicesScreen(
                     state = state,
@@ -81,7 +88,12 @@ fun RootComposable(
         composable(route = Screen.WifiInfo.name) {
             val wifiInfoViewModel = hiltViewModel<WifiInfoViewModel>()
 
-            ContentOrBluetoothInfo(isBluetoothEnabled = isBluetoothEnabled) {
+            ContentOrBluetoothInfo(
+                isBluetoothEnabled = isBluetoothEnabled,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            ) {
                 val state by wifiInfoViewModel.stateFlow.collectAsState()
                 WifiInfoScreen(
                     state = state,
@@ -92,6 +104,15 @@ fun RootComposable(
             }
 
             wifiInfoViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
+
+        composable(route = Screen.Alerts.name) {
+            val alertsViewModel = hiltViewModel<AlertsViewModel>()
+            AlertsScreen(
+                state = alertsViewModel.stateFlow.collectAsState().value,
+                onEvent = alertsViewModel::onNewEvent,
+            )
+            alertsViewModel.navigationFlow.observeNavigation(navController = navController)
         }
     }
 }
@@ -124,6 +145,7 @@ private fun Flow<Direction>.observeNavigation(navController: NavController) {
 @Composable
 private fun ContentOrBluetoothInfo(
     isBluetoothEnabled: Boolean,
+    onBackClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val permissionsGranted =
@@ -133,9 +155,9 @@ private fun ContentOrBluetoothInfo(
         if (isBluetoothEnabled) {
             content()
         } else {
-            BluetoothOffScreen()
+            BluetoothOffScreen(onBackClick = onBackClick)
         }
     } else {
-        NoBluetoothPermissionScreen()
+        NoBluetoothPermissionScreen(onBackClick = onBackClick)
     }
 }

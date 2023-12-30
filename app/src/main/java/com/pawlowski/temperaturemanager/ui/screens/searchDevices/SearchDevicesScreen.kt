@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -28,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
+import com.pawlowski.temperaturemanager.ui.components.Toolbar
 
 @Composable
 fun SearchDevicesScreen(
@@ -35,7 +34,14 @@ fun SearchDevicesScreen(
     onEvent: (SearchDevicesEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        ToolBox(onBackClick = {})
+        Toolbar(
+            leading = Toolbar.ToolbarLeading.Back(
+                onClick = {
+                    onEvent(SearchDevicesEvent.BackClick)
+                },
+            ),
+        )
+
         Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
             Text(
                 text = "Wybierz dostępne\nurządzenie",
@@ -74,34 +80,21 @@ fun SearchDevicesScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Icon(painter = painterResource(id = R.drawable.device), contentDescription = null, tint = Color.White)
+                            Icon(
+                                painter = painterResource(id = R.drawable.device),
+                                contentDescription = null,
+                                tint = Color.White,
+                            )
                             Text(
                                 text = name,
                                 color = Color.White,
 
                             )
                         }
-                        Text(text = "MAC: " + address, color = Color.White, fontSize = 15.sp)
+                        Text(text = "MAC: $address", color = Color.White, fontSize = 15.sp)
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun ToolBox(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height = 56.dp)
-            .background(color = Color(0xFF001D4B)),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.padding(11.dp).clickable { onBackClick.invoke() },
-        )
     }
 }
