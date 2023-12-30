@@ -68,7 +68,12 @@ fun RootComposable(
         composable(route = Screen.SearchDevices.name) {
             val searchViewModel = hiltViewModel<SearchDevicesViewModel>()
 
-            ContentOrBluetoothInfo(isBluetoothEnabled = isBluetoothEnabled) {
+            ContentOrBluetoothInfo(
+                isBluetoothEnabled = isBluetoothEnabled,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            ) {
                 val state by searchViewModel.stateFlow.collectAsState()
                 SearchDevicesScreen(
                     state = state,
@@ -83,7 +88,12 @@ fun RootComposable(
         composable(route = Screen.WifiInfo.name) {
             val wifiInfoViewModel = hiltViewModel<WifiInfoViewModel>()
 
-            ContentOrBluetoothInfo(isBluetoothEnabled = isBluetoothEnabled) {
+            ContentOrBluetoothInfo(
+                isBluetoothEnabled = isBluetoothEnabled,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+            ) {
                 val state by wifiInfoViewModel.stateFlow.collectAsState()
                 WifiInfoScreen(
                     state = state,
@@ -135,6 +145,7 @@ private fun Flow<Direction>.observeNavigation(navController: NavController) {
 @Composable
 private fun ContentOrBluetoothInfo(
     isBluetoothEnabled: Boolean,
+    onBackClick: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val permissionsGranted =
@@ -144,9 +155,9 @@ private fun ContentOrBluetoothInfo(
         if (isBluetoothEnabled) {
             content()
         } else {
-            BluetoothOffScreen()
+            BluetoothOffScreen(onBackClick = onBackClick)
         }
     } else {
-        NoBluetoothPermissionScreen()
+        NoBluetoothPermissionScreen(onBackClick = onBackClick)
     }
 }

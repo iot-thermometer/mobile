@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.ui.components.Loader
+import com.pawlowski.temperaturemanager.ui.components.Toolbar
 
 @Composable
 fun HomeScreen(
@@ -42,7 +43,12 @@ fun HomeScreen(
     onEvent: (HomeEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(space = 8.dp)) {
-        ToolBox(onIconClick = {})
+        Toolbar(
+            trailing = Toolbar.ToolbarTrailing.Icon(
+                iconId = R.drawable.person,
+                onClick = {},
+            ),
+        )
         Box(modifier = Modifier.fillMaxSize()) {
             when (state.devicesOverviewResource) {
                 is Resource.Success -> {
@@ -89,26 +95,6 @@ fun HomeScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ToolBox(onIconClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height = 56.dp)
-            .background(color = Color(0xFF001D4B)),
-        contentAlignment = Alignment.CenterEnd,
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.person),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier
-                .size(size = 56.dp)
-                .clickable { onIconClick.invoke() },
-        )
     }
 }
 

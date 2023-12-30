@@ -1,13 +1,11 @@
 package com.pawlowski.temperaturemanager.ui.screens.wifiInfo
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,22 +40,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
+import com.pawlowski.temperaturemanager.ui.components.Toolbar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WifiInfoScreen(
     state: WifiInfoState,
     onEvent: (WifiInfoEvent) -> Unit,
 ) {
-//    Text(text = "Wifi info")
-
     when (state) {
         is WifiInfoState.Initialising -> {
         }
         is WifiInfoState.Content -> {
             Column(verticalArrangement = Arrangement.spacedBy(37.dp)) {
-                ToolBox(onBackClick = {})
-
+                Toolbar(
+                    leading = Toolbar.ToolbarLeading.Back(
+                        onClick = {
+                            onEvent(WifiInfoEvent.BackClick)
+                        },
+                    ),
+                )
                 Column(
                     modifier = Modifier.padding(horizontal = 10.dp)
                         .clip(shape = RoundedCornerShape(size = 12.dp))
@@ -74,17 +74,16 @@ fun WifiInfoScreen(
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     SingleInputColumn(
-                        state.ssidInput,
-                        "Wpisz SSID: ",
-                        "SSID",
+                        ssidInput = state.ssidInput,
+                        header = "Wpisz SSID: ",
+                        label = "SSID",
                         onValueChange = { onEvent(WifiInfoEvent.ChangeSsid(it)) },
                     )
                     if (state.ssidError != null) {
                         Text(
-                            state.ssidError,
+                            text = state.ssidError,
                             color = Color.Red,
                             modifier = Modifier.absolutePadding(left = 45.dp),
-
                         )
                     }
                 }
@@ -117,7 +116,7 @@ fun WifiInfoScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SingleInputColumn(ssidInput: String, header: String, label: String, onValueChange: (String) -> Unit) {
+private fun SingleInputColumn(ssidInput: String, header: String, label: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(horizontal = 10.dp)) {
         Text(
             text = header,
@@ -142,7 +141,7 @@ fun SingleInputColumn(ssidInput: String, header: String, label: String, onValueC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextField(
+private fun TextField(
     text: String,
     label: String,
     modifier: Modifier,
@@ -184,23 +183,4 @@ fun TextField(
             }
         },
     )
-}
-
-@Composable
-fun ToolBox(onBackClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height = 56.dp)
-            .background(color = Color(0xFF001D4B)),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.arrow_back),
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier
-                .padding(11.dp)
-                .clickable { onBackClick.invoke() },
-        )
-    }
 }
