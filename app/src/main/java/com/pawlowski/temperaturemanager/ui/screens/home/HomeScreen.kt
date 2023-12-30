@@ -99,13 +99,15 @@ fun ToolBox(onBackClick: () -> Unit) {
 fun DeviceParameters(deviceName: String, temperature: Int, density: Int) {
     Row(modifier = Modifier.fillMaxWidth().height(60.dp).clip(shape = RoundedCornerShape(size = 5.dp)).background(color = Color(0xFFD9E2FF)).padding(10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Icon(painter = painterResource(id = R.drawable.device), contentDescription = null, tint = Color.Black, modifier = Modifier.size(50.dp))
-        Column(modifier = Modifier.height(50.dp).weight(1f).clip(shape = RoundedCornerShape(size = 5.dp)).background(color = Color(0xFF3F4759))) {
+        Column(
+            modifier = Modifier.height(50.dp).weight(1f).clip(shape = RoundedCornerShape(size = 5.dp)).background(color = Color(0xFF3F4759)),
+        ) {
             Text(
                 deviceName,
                 textAlign = TextAlign.Center,
                 color = Color.White,
                 modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 15.dp)
+                    .padding(horizontal = 10.dp, vertical = 13.dp)
                     .fillMaxWidth(),
                 fontSize = 10.sp,
                 overflow = TextOverflow.Ellipsis,

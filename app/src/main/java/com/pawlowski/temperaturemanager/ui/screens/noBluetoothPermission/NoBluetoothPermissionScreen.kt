@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -35,7 +36,6 @@ fun NoBluetoothPermissionScreen() {
     val bluetoothScanPermissionState = rememberBluetoothMultiplePermissionsState()
     ToolBox(onBackClick = {})
     Column {
-
         val lottieComposition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bluetooth_animations))
         val progress by animateLottieCompositionAsState(
             lottieComposition,
@@ -43,8 +43,10 @@ fun NoBluetoothPermissionScreen() {
         )
         LottieAnimation(
             modifier = Modifier
-                .padding(start=55.dp, top = 80.dp)
-                .height(200.dp).width(300.dp),
+                .padding(top = 70.dp)
+                .height(200.dp)
+                .width(300.dp)
+                .align(Alignment.CenterHorizontally),
             composition = lottieComposition,
             progress = { progress },
         )
@@ -55,8 +57,8 @@ fun NoBluetoothPermissionScreen() {
                 "Please grant the permission"
         }
         Text(textToShow, modifier = Modifier.fillMaxWidth().padding(vertical = 60.dp, horizontal = 40.dp), textAlign = TextAlign.Center, color = Color(0xFF757780))
-        Button(onClick = { bluetoothScanPermissionState.launchMultiplePermissionRequest() }, modifier = Modifier.fillMaxWidth().padding(horizontal = 100.dp, vertical = 60.dp), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF001D4B))) {
-            Text("Request permission")
+        Button(onClick = { bluetoothScanPermissionState.launchMultiplePermissionRequest() }, modifier = Modifier.fillMaxWidth().padding(horizontal = 100.dp, vertical = 100.dp).align(Alignment.CenterHorizontally), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF001D4B))) {
+            Text("Request permission", textAlign = TextAlign.Center)
         }
     }
 }
