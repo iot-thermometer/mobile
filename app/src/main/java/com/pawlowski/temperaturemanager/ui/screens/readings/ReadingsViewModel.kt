@@ -44,14 +44,11 @@ internal class ReadingsViewModel @Inject constructor(
                         ReadingsState.Content(
                             lastTemperature = lastReading.temperature.toInt(),
                             lastSoilMoisture = lastReading.soilMoisture.toInt(),
-                            readings = readings.sortedBy {
+                            readings = readings.sortedByDescending {
                                 it.measuredAt
                             }.groupBy {
                                 dateFormat.format(Date(it.measuredAt))
-                            }.toList()
-                                .sortedByDescending {
-                                    dateFormat.parse(it.first)?.time
-                                }.toMap(),
+                            },
                         )
                     }
                 } else {
