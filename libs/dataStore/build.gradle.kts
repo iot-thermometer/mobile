@@ -6,24 +6,12 @@ plugins {
     kotlin("kapt")
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.android.library.get().pluginId)
-    id(libs.plugins.com.google.protobuf.get().pluginId)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
 }
 
-configureProtobuf()
-
 android {
-    namespace = "com.pawlowski.network"
+    namespace = "com.pawlowski.datastore"
     compileSdk = ProjectConfig.compileSdk
-
-    sourceSets.getByName("main") {
-        setProtoPath(srcPath = "src/main/proto")
-        java.srcDirs(
-            "build/generated/source/proto/main/grpc",
-            "build/generated/source/proto/main/grpckt",
-            "build/generated/source/proto/main/java",
-        )
-    }
 
     defaultConfig {
         minSdk = ProjectConfig.minSdk
@@ -40,10 +28,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":libs:dataStore"))
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-    implementation(libs.bundles.grpc)
     implementation(libs.androidx.datastore)
     implementation(libs.security.crypto.datastore)
     implementation(platform(libs.org.jetbrains.kotlinx.kotlinx.serialization.bom))

@@ -1,13 +1,13 @@
-package com.pawlowski.network.dataProviders
+package com.pawlowski.network.login
 
-import com.pawlowski.network.Token
-import com.pawlowski.network.service.ThermometerServiceProvider
+import com.pawlowski.datastore.authToken.Token
+import com.pawlowski.network.IThermometerServiceProvider
 import com.thermometer.proto.LoginRequest
 import com.thermometer.proto.RegisterRequest
 import javax.inject.Inject
 
-class LoginDataProvider @Inject constructor(
-    private val thermometerServiceProvider: ThermometerServiceProvider,
+internal class LoginDataProvider @Inject constructor(
+    private val thermometerServiceProvider: IThermometerServiceProvider,
 ) {
     suspend fun login(
         email: String,

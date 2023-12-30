@@ -1,4 +1,4 @@
-package com.pawlowski.network.dataProviders.base
+package com.pawlowski.network.utils
 
 import io.grpc.Metadata
 import io.grpc.stub.AbstractStub

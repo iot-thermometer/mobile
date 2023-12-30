@@ -1,17 +1,17 @@
-package com.pawlowski.temperaturemanager.data.repository
+package com.pawlowski.network.login
 
-import com.pawlowski.network.dataProviders.LoginDataProvider
-import com.pawlowski.network.datastore.TokenRepository
+import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.network.ILoginRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LoginRepository @Inject constructor(
+internal class LoginRepository @Inject constructor(
     private val loginDataProvider: LoginDataProvider,
-    private val tokenRepository: TokenRepository,
-) {
+    private val tokenRepository: ITokenRepository,
+) : ILoginRepository {
 
-    suspend fun login(
+    override suspend fun login(
         email: String,
         password: String,
     ) {
@@ -23,7 +23,7 @@ class LoginRepository @Inject constructor(
         }
     }
 
-    suspend fun register(
+    override suspend fun register(
         email: String,
         password: String,
     ) {

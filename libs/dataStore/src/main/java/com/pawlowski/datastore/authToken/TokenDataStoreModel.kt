@@ -1,8 +1,8 @@
-package com.pawlowski.network.datastore
+package com.pawlowski.datastore.authToken
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TokenDataStoreModel(
+internal data class TokenDataStoreModel(
     val token: String? = null,
 )

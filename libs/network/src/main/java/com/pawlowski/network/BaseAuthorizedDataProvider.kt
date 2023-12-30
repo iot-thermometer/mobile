@@ -1,13 +1,13 @@
-package com.pawlowski.network.dataProviders.base
+package com.pawlowski.network
 
-import com.pawlowski.network.datastore.TokenRepository
-import com.pawlowski.network.service.ThermometerServiceProvider
+import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.network.utils.addTokenHeader
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import kotlinx.coroutines.flow.Flow
 
 abstract class BaseAuthorizedDataProvider(
-    private val tokenRepository: TokenRepository,
-    private val thermometerServiceProvider: ThermometerServiceProvider,
+    private val tokenRepository: ITokenRepository,
+    private val thermometerServiceProvider: IThermometerServiceProvider,
 ) {
     suspend fun <REQ : Any, RESP : Any> authorizedUnary(
         method: suspend ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub.(REQ) -> RESP,

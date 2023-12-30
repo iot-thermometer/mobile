@@ -1,8 +1,8 @@
 package com.pawlowski.temperaturemanager.data
 
-import com.pawlowski.network.dataProviders.base.BaseAuthorizedDataProvider
-import com.pawlowski.network.datastore.TokenRepository
-import com.pawlowski.network.service.ThermometerServiceProvider
+import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.network.BaseAuthorizedDataProvider
+import com.pawlowski.network.IThermometerServiceProvider
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.thermometer.proto.CreateDeviceRequest
@@ -12,8 +12,8 @@ import com.thermometer.proto.ThermometerServiceGrpcKt
 import javax.inject.Inject
 
 class ThermometerDataProvider @Inject constructor(
-    thermometerServiceProvider: ThermometerServiceProvider,
-    tokenRepository: TokenRepository,
+    thermometerServiceProvider: IThermometerServiceProvider,
+    tokenRepository: ITokenRepository,
 ) : BaseAuthorizedDataProvider(
     thermometerServiceProvider = thermometerServiceProvider,
     tokenRepository = tokenRepository,

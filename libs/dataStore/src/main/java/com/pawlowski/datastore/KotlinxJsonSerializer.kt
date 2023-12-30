@@ -1,4 +1,4 @@
-package com.pawlowski.network.datastore
+package com.pawlowski.datastore
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
