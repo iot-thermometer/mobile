@@ -10,7 +10,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.pawlowski.notificationservice.worker.INotificationTokenSynchronizationWorkStarter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.random.Random
@@ -18,8 +17,8 @@ import kotlin.random.Random
 @AndroidEntryPoint
 class NotificationsService @Inject constructor() : FirebaseMessagingService() {
 
-    @Inject
-    lateinit var notificationTokenWorkStarter: INotificationTokenSynchronizationWorkStarter
+//    @Inject
+//    lateinit var notificationTokenWorkStarter: INotificationTokenSynchronizationWorkStarter
 
     /**
      * Called when message is received and app is in the foreground or app is in the background and user clicks it.
@@ -53,7 +52,7 @@ class NotificationsService @Inject constructor() : FirebaseMessagingService() {
         Log.d(TAG, "Refreshed token: $token")
 
         // Start worker which will update token if user is authenticated
-        notificationTokenWorkStarter.startWorker()
+        // notificationTokenWorkStarter.startWorker()
     }
 
     private fun sendNotification(
@@ -80,7 +79,7 @@ class NotificationsService @Inject constructor() : FirebaseMessagingService() {
             .setContentTitle(tittle)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            // .setSmallIcon(R.drawable.app_logo)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
