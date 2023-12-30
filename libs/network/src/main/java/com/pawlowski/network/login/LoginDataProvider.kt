@@ -1,6 +1,6 @@
 package com.pawlowski.network.login
 
-import com.pawlowski.datastore.authToken.Token
+import com.pawlowski.datastore.AuthToken
 import com.pawlowski.network.IThermometerServiceProvider
 import com.thermometer.proto.LoginRequest
 import com.thermometer.proto.RegisterRequest
@@ -12,26 +12,26 @@ internal class LoginDataProvider @Inject constructor(
     suspend fun login(
         email: String,
         password: String,
-    ): Token =
+    ): AuthToken =
         thermometerServiceProvider().login(
             request = LoginRequest.newBuilder()
                 .setEmail(email)
                 .setPassword(password)
                 .build(),
         ).let {
-            Token(token = it.token)
+            AuthToken(token = it.token)
         }
 
     suspend fun register(
         email: String,
         password: String,
-    ): Token =
+    ): AuthToken =
         thermometerServiceProvider().register(
             request = RegisterRequest.newBuilder()
                 .setEmail(email)
                 .setPassword(password)
                 .build(),
         ).let {
-            Token(token = it.token)
+            AuthToken(token = it.token)
         }
 }

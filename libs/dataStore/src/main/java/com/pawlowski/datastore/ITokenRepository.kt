@@ -1,9 +1,7 @@
 package com.pawlowski.datastore
 
-import com.pawlowski.datastore.authToken.Token
-
 interface ITokenRepository {
-    suspend fun saveToken(newToken: Token)
+    suspend fun saveToken(newToken: AuthToken)
 
-    suspend fun getToken(): Token?
+    suspend fun getToken(): AuthToken?
 }
