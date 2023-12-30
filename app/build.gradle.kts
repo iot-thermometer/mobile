@@ -1,12 +1,9 @@
-import com.android.build.api.dsl.AndroidSourceSet
-import com.google.protobuf.gradle.ProtobufExtension
 import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.proto
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
+    id(libs.plugins.com.android.application.get().pluginId)
+    id(libs.plugins.org.jetbrains.kotlin.android.get().pluginId)
     kotlin("kapt")
     alias(libs.plugins.com.google.dagger.hilt.android)
     id(libs.plugins.com.google.protobuf.get().pluginId)
@@ -14,20 +11,9 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-configureProtobuf()
-
 android {
     namespace = "com.pawlowski.temperaturemanager"
     compileSdk = ProjectConfig.compileSdk
-
-    sourceSets.getByName("main") {
-        setProtoPath(srcPath = "src/main/proto/proto")
-        java.srcDirs(
-            "build/generated/source/proto/main/grpc",
-            "build/generated/source/proto/main/grpckt",
-            "build/generated/source/proto/main/java",
-        )
-    }
 
     defaultConfig {
         applicationId = "com.pawlowski.temperaturemanager"
@@ -110,42 +96,4 @@ dependencies {
     implementation(libs.security.crypto.datastore)
 
     implementation(libs.lottie)
-}
-
-fun Project.configureProtobuf() {
-    extensions.findByType<ProtobufExtension>()!!.apply {
-        protoc { artifact = libs.com.google.protobuf.protoc.get().toString() }
-
-        plugins {
-            id("grpc") {
-                artifact = libs.io.grpc.protoc.gen.grpc.java.get().toString()
-            }
-            id("grpckt") {
-                artifact = libs.io.grpc.protoc.gen.grpc.kotlin.get().toString()
-            }
-
-            generateProtoTasks {
-                all().forEach { task ->
-                    task.builtins {
-                        id("java") {
-                            option("lite")
-                        }
-                    }
-
-                    task.plugins {
-                        id("grpc") {
-                            option("lite")
-                        }
-                        id("grpckt")
-                    }
-                }
-            }
-        }
-    }
-}
-
-fun AndroidSourceSet.setProtoPath(srcPath: String) {
-    proto {
-        setSrcDirs(listOf(srcPath))
-    }
 }
