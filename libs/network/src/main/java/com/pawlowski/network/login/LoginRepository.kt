@@ -1,6 +1,6 @@
 package com.pawlowski.network.login
 
-import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.datastore.IAuthTokenRepository
 import com.pawlowski.network.ILoginRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -8,7 +8,7 @@ import javax.inject.Singleton
 @Singleton
 internal class LoginRepository @Inject constructor(
     private val loginDataProvider: LoginDataProvider,
-    private val tokenRepository: ITokenRepository,
+    private val authTokenRepository: IAuthTokenRepository,
 ) : ILoginRepository {
 
     override suspend fun login(
@@ -19,7 +19,7 @@ internal class LoginRepository @Inject constructor(
             email = email,
             password = password,
         ).also {
-            tokenRepository.saveToken(it)
+            authTokenRepository.saveToken(it)
         }
     }
 
@@ -31,7 +31,7 @@ internal class LoginRepository @Inject constructor(
             email = email,
             password = password,
         ).also {
-            tokenRepository.saveToken(it)
+            authTokenRepository.saveToken(it)
         }
     }
 }

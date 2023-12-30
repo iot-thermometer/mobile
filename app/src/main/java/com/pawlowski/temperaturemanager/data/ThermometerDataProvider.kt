@@ -1,6 +1,6 @@
 package com.pawlowski.temperaturemanager.data
 
-import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.datastore.IAuthTokenRepository
 import com.pawlowski.network.BaseAuthorizedDataProvider
 import com.pawlowski.network.IThermometerServiceProvider
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
@@ -13,10 +13,10 @@ import javax.inject.Inject
 
 class ThermometerDataProvider @Inject constructor(
     thermometerServiceProvider: IThermometerServiceProvider,
-    tokenRepository: ITokenRepository,
+    tokenRepository: IAuthTokenRepository,
 ) : BaseAuthorizedDataProvider(
     thermometerServiceProvider = thermometerServiceProvider,
-    tokenRepository = tokenRepository,
+    authTokenRepository = tokenRepository,
 ) {
 
     suspend fun listDevices(): List<DeviceDomain> = authorizedUnary(

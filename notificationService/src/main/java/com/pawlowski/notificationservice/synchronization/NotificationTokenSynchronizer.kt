@@ -1,15 +1,15 @@
 package com.pawlowski.notificationservice.synchronization
 
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pawlowski.datastore.IPushTokenRepository
 import com.pawlowski.notificationservice.INotificationsDataProvider
-import com.pawlowski.notificationservice.dataStore.IDeviceIdAndTokenDataStore
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 internal class NotificationTokenSynchronizer @Inject constructor(
-    private val deviceIdAndTokenPreferences: IDeviceIdAndTokenDataStore,
+    private val pushTokenRepository: IPushTokenRepository,
     private val notificationsDataProvider: INotificationsDataProvider,
     private val firebaseMessaging: FirebaseMessaging,
 ) : INotificationTokenSynchronizer {
@@ -36,30 +36,28 @@ internal class NotificationTokenSynchronizer @Inject constructor(
         }
     }
 
-    override fun deleteCurrentToken() {
-        synchronized(this) {
-            firebaseMessaging.deleteToken()
-            deviceIdAndTokenPreferences.updateDeviceIdAndToken {
-                it.copy(token = null)
-            }
+    override suspend fun deleteCurrentToken() {
+        firebaseMessaging.deleteToken()
+        pushTokenRepository.updatePushToken {
+            it.copy(token = null)
         }
     }
 
-    private fun getOrCreateDeviceId(): String {
-        val currentValue = deviceIdAndTokenPreferences.getDeviceIdAndToken()
-        return if (currentValue.deviceId.isNullOrEmpty()) {
-            val newId = UUID.randomUUID().toString()
-            deviceIdAndTokenPreferences.updateDeviceIdAndToken {
+    private suspend fun getOrCreateDeviceId(): String {
+        return pushTokenRepository.getPushToken().deviceId?.ifEmpty {
+            null
+        } ?: createNewDeviceId()
+    }
+
+    private suspend fun createNewDeviceId(): String = UUID.randomUUID().toString()
+        .also { newId ->
+            pushTokenRepository.updatePushToken {
                 it.copy(deviceId = newId)
             }
-            newId
-        } else {
-            currentValue.deviceId
         }
-    }
 
-    private fun isThisTokenSynchronizedWithServer(token: String): Boolean {
-        val currentValue = deviceIdAndTokenPreferences.getDeviceIdAndToken()
+    private suspend fun isThisTokenSynchronizedWithServer(token: String): Boolean {
+        val currentValue = pushTokenRepository.getPushToken()
         return currentValue.token == token
     }
 }

@@ -1,12 +1,12 @@
 package com.pawlowski.network
 
-import com.pawlowski.datastore.ITokenRepository
+import com.pawlowski.datastore.IAuthTokenRepository
 import com.pawlowski.network.utils.addTokenHeader
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import kotlinx.coroutines.flow.Flow
 
 abstract class BaseAuthorizedDataProvider(
-    private val tokenRepository: ITokenRepository,
+    private val authTokenRepository: IAuthTokenRepository,
     private val thermometerServiceProvider: IThermometerServiceProvider,
 ) {
     suspend fun <REQ : Any, RESP : Any> authorizedUnary(
@@ -14,7 +14,9 @@ abstract class BaseAuthorizedDataProvider(
         request: REQ,
     ): RESP = thermometerServiceProvider
         .invoke()
-        .addTokenHeader(token = tokenRepository.getToken()?.token ?: throw Exception("Empty token"))
+        .addTokenHeader(
+            token = authTokenRepository.getToken()?.token ?: throw Exception("Empty token"),
+        )
         .method(request)
 
     suspend fun <REQ : Any, RESP : Any> authorizedFlow(
@@ -22,6 +24,8 @@ abstract class BaseAuthorizedDataProvider(
         request: REQ,
     ): Flow<RESP> = thermometerServiceProvider
         .invoke()
-        .addTokenHeader(token = tokenRepository.getToken()?.token ?: throw Exception("Empty token"))
+        .addTokenHeader(
+            token = authTokenRepository.getToken()?.token ?: throw Exception("Empty token"),
+        )
         .method(request)
 }

@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":libs:dataStore"))
+
     implementation(libs.firebase.messaging)
     implementation(libs.hilt.android)
     implementation(libs.hilt.workmanager)

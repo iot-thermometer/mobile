@@ -1,6 +1,6 @@
 package com.pawlowski.datastore
 
-interface ITokenRepository {
+interface IAuthTokenRepository {
     suspend fun saveToken(newToken: AuthToken)
 
     suspend fun getToken(): AuthToken?
