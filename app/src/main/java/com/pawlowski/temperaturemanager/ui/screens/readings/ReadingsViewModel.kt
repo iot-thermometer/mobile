@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetReadingsUseCase
+import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ensureActive
@@ -57,5 +58,10 @@ internal class ReadingsViewModel @Inject constructor(
     }
 
     override fun onNewEvent(event: ReadingsEvent) {
+        when (event) {
+            ReadingsEvent.BackClick -> {
+                pushNavigationEvent(Back)
+            }
+        }
     }
 }
