@@ -6,15 +6,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,10 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
+import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
+import java.util.Date
 
 @Composable
 fun ReadingsScreen(
@@ -181,17 +191,71 @@ private fun ReadingsSection(
     Column {
         Text(text = day)
         readings.forEach {
-            ReadingsItem(reading = it)
+            Row(
+                modifier = Modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        spotColor = Color(0x40000000),
+                        ambientColor = Color(0x40000000),
+                    )
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFD9E2FF), shape = RoundedCornerShape(size = 4.dp))
+                    .padding(horizontal = 5.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(space = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ReadingsCard(text = Date(it.measuredAt).formatHHmm(), color = Color(0xFF3F4759))
+                Icon(
+                    imageVector = Icons.Filled.Thermostat,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 20.dp),
+                )
+                ReadingsCard(text = "${it.temperature}°C", color = Color(0xFFDE3730))
+
+                Icon(
+                    imageVector = Icons.Filled.WaterDrop,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 20.dp),
+                )
+
+                ReadingsCard(
+                    text = "${it.soilMoisture.toInt()}%",
+                    color = Color(0xFF355CA8),
+                    subtitle = "[kg/kg]",
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
 
 @Composable
-private fun ReadingsItem(
-    reading: ReadingDomain,
+private fun ReadingsCard(
+    text: String,
+    subtitle: String? = null,
+    color: Color,
 ) {
-    Column(modifier = Modifier.background(color = Color.Blue)) {
-        Text(text = reading.temperature.toString())
-        Text(text = reading.soilMoisture.toString())
+    Column(
+        modifier = Modifier
+            .background(color = color, shape = RoundedCornerShape(size = 4.dp))
+            .padding(horizontal = 8.dp, vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = text,
+            color = Color(0xFFFFFFFF),
+            fontSize = 22.sp,
+            fontWeight = FontWeight(400),
+            textAlign = TextAlign.Center,
+        )
+        subtitle?.let {
+            Text(
+                text = subtitle,
+                color = Color(0xFFFFFFFF),
+                fontSize = 13.sp,
+                fontWeight = FontWeight(400),
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }

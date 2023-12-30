@@ -39,13 +39,19 @@ internal class ReadingsViewModel @Inject constructor(
                     val lastReading = readings.maxBy {
                         it.measuredAt
                     }
+                    val dateFormat = SimpleDateFormat("dd.MM.yyyy")
                     updateState {
                         ReadingsState.Content(
                             lastTemperature = lastReading.temperature.toInt(),
                             lastSoilMoisture = lastReading.soilMoisture.toInt(),
-                            readings = readings.groupBy {
-                                SimpleDateFormat("dd.MM.yyyy").format(Date(it.measuredAt))
-                            },
+                            readings = readings.sortedBy {
+                                it.measuredAt
+                            }.groupBy {
+                                dateFormat.format(Date(it.measuredAt))
+                            }.toList()
+                                .sortedByDescending {
+                                    dateFormat.parse(it.first)?.time
+                                }.toMap(),
                         )
                     }
                 } else {
