@@ -3,7 +3,6 @@ package com.pawlowski.temperaturemanager.data.ble
 import com.juul.kable.AndroidAdvertisement
 import com.juul.kable.Scanner
 import com.juul.kable.peripheral
-import com.juul.kable.read
 import com.juul.kable.write
 import com.pawlowski.temperaturemanager.domain.BluetoothException
 import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
@@ -67,20 +66,6 @@ internal class BLEManager @Inject constructor() : IBLEManager {
             }
         } ?: throw BluetoothException.CharacteristicsNotFound
 
-        val readCharacteristics = peripheral.services?.firstNotNullOfOrNull {
-            it.characteristics.filter {
-                println(it.characteristicUuid)
-                it.properties.read
-            }.also {
-                it.forEach {
-                    println("Characteristics ${it.characteristicUuid}")
-                    it.descriptors.forEach {
-                        println("Descriptor ${it.descriptorUuid}")
-                    }
-                }
-            }.getOrNull(0)
-        } ?: throw BluetoothException.CharacteristicsNotFound
-
         val textToSend =
             "{\"ssid\":\"$ssid\",\"password\":\"$password\", \"token\":\"${token}\",\"id\":$id}"
 
@@ -90,33 +75,6 @@ internal class BLEManager @Inject constructor() : IBLEManager {
         )
         println("Write success, waiting for disconnect")
 
-        /*        peripheral.state
-                    .onEach { println(it.toString()) }
-                    .filterIsInstance<State.Disconnected>()
-                    .timeout(10.seconds)
-                    .catch {
-                        if (it is TimeoutCancellationException) {
-                            throw BluetoothException.Timeout
-                        } else {
-                            throw it
-                        }
-                    }
-                    .first()*/
-
-        val response =
-            peripheral.read(readCharacteristics).also {
-                it.forEach {
-                    print(it)
-                    print(" ")
-                }
-            }.decodeToString().also(::println)
-
-        println("Wybrałem ${readCharacteristics.characteristicUuid}")
-
-        println("Response: $response")
-        /*if (response != "OK") {
-            throw BluetoothException.Other("Not ok")
-        }*/
         peripheral.disconnect()
     }
 }

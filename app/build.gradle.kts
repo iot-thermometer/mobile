@@ -96,5 +96,7 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.security.crypto.datastore)
 
+    implementation ("androidx.compose.material:material-icons-extended:1.3.1")
+
     implementation(libs.lottie)
 }

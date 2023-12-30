@@ -8,6 +8,7 @@ import com.pawlowski.temperaturemanager.domain.useCase.ScanNearbyDevicesUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +27,11 @@ internal class SearchDevicesViewModel @Inject constructor(
     override fun initialised() {
         viewModelScope.launch {
             scanNearbyDevicesUseCase()
+                .map {
+                    it.filter {
+                        it.name == "Termometr IoT"
+                    }
+                }
                 .collectLatest {
                     updateState {
                         copy(devices = it)
