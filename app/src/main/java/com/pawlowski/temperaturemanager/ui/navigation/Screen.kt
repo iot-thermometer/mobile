@@ -68,6 +68,23 @@ sealed interface Screen {
         ) : Direction
     }
 
+    object Alerts : Screen {
+        override val name: String = "Alerts"
+        override val directions: List<Direction> = AlertsDirection.values().toList()
+
+        enum class AlertsDirection(
+            override val destination: Screen,
+            override val popUpTo: Screen? = null,
+            override val popUpToInclusive: Boolean = false,
+        ) : Direction {
+            HOME(
+                destination = Home,
+                popUpTo = Home,
+                popUpToInclusive = true,
+            ),
+        }
+    }
+
     object Splash : Screen {
         override val name: String = "Splash"
         override val directions: List<Direction> = SplashDirection.values().toList()

@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsScreen
+import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsViewModel
 import com.pawlowski.temperaturemanager.ui.screens.bluetoothOff.BluetoothOffScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
@@ -92,6 +94,15 @@ fun RootComposable(
             }
 
             wifiInfoViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
+
+        composable(route = Screen.Alerts.name) {
+            val alertsViewModel = hiltViewModel<AlertsViewModel>()
+            AlertsScreen(
+                state = alertsViewModel.stateFlow.collectAsState().value,
+                onEvent = alertsViewModel::onNewEvent,
+            )
+            alertsViewModel.navigationFlow.observeNavigation(navController = navController)
         }
     }
 }
