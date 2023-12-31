@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
@@ -47,6 +48,12 @@ fun ReadingsScreen(
             leading = Toolbar.ToolbarLeading.Back(
                 onClick = {
                     onEvent(ReadingsEvent.BackClick)
+                },
+            ),
+            trailing = Toolbar.ToolbarTrailing.Icon(
+                iconId = R.drawable.settings,
+                onClick = {
+                    onEvent(ReadingsEvent.SettingsClick)
                 },
             ),
         )
