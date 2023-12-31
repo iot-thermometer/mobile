@@ -5,6 +5,7 @@ import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 
 data class DeviceSettingsState(
     val deviceResource: Resource<DeviceDomain>,
+    val isLoading: Boolean = false,
 )
 
 sealed interface DeviceSettingsEvent {

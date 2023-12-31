@@ -4,10 +4,11 @@ import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
+import com.pawlowski.temperaturemanager.domain.useCase.DeleteDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetDeviceByIdUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
-import com.pawlowski.temperaturemanager.ui.navigation.Screen
+import com.pawlowski.temperaturemanager.ui.navigation.Screen.DeviceSettings.DeviceSettingsDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,17 +17,18 @@ import javax.inject.Inject
 internal class DeviceSettingsViewModel @Inject constructor(
     private val getDeviceByIdUseCase: GetDeviceByIdUseCase,
     private val deviceSelectionUseCase: DeviceSelectionUseCase,
-) : BaseMviViewModel<DeviceSettingsState, DeviceSettingsEvent, Screen.DeviceSettings.DeviceSettingsDirection>(
+    private val deleteDeviceUseCase: DeleteDeviceUseCase,
+) : BaseMviViewModel<DeviceSettingsState, DeviceSettingsEvent, DeviceSettingsDirection>(
     initialState = DeviceSettingsState(
         deviceResource = Resource.Loading,
     ),
 ) {
+    private val deviceId = deviceSelectionUseCase.getSelectedDeviceId()!!
 
     override fun initialised() {
-        val deviceId = deviceSelectionUseCase.getSelectedDeviceId()
         viewModelScope.launch {
             resourceFlow {
-                getDeviceByIdUseCase(deviceId!!)
+                getDeviceByIdUseCase(deviceId)
             }.collect { deviceResource ->
                 updateState {
                     copy(deviceResource = deviceResource)
@@ -42,6 +44,21 @@ internal class DeviceSettingsViewModel @Inject constructor(
             }
 
             is DeviceSettingsEvent.DeleteDeviceClick -> {
+                if (!actualState.isLoading) {
+                    updateState {
+                        copy(isLoading = true)
+                    }
+                    viewModelScope.launch {
+                        kotlin.runCatching {
+                            deleteDeviceUseCase(deviceId = deviceId)
+                        }.onSuccess {
+                            pushNavigationEvent(DeviceSettingsDirection.HOME)
+                        }
+                        updateState {
+                            copy(isLoading = false)
+                        }
+                    }
+                }
             }
         }
     }

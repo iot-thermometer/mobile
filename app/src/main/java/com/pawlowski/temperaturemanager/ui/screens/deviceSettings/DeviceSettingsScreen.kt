@@ -54,7 +54,11 @@ fun DeviceSettingsScreen(
 
             when (state.deviceResource) {
                 is Resource.Success -> {
-                    Content(device = state.deviceResource.data)
+                    Content(
+                        device = state.deviceResource.data,
+                        isLoading = state.isLoading,
+                        onEvent = onEvent,
+                    )
                 }
 
                 is Resource.Loading -> {
@@ -70,7 +74,11 @@ fun DeviceSettingsScreen(
 }
 
 @Composable
-private fun Content(device: DeviceDomain) {
+private fun Content(
+    device: DeviceDomain,
+    isLoading: Boolean,
+    onEvent: (DeviceSettingsEvent) -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,7 +88,10 @@ private fun Content(device: DeviceDomain) {
             name = device.name,
             lastSeen = device.recentlySeenAt,
         )
-        SettingsCard()
+        SettingsCard(
+            onEvent = onEvent,
+            isLoading = isLoading,
+        )
     }
 }
 
@@ -132,7 +143,10 @@ private fun DeviceInfo(
 }
 
 @Composable
-private fun SettingsCard() {
+private fun SettingsCard(
+    isLoading: Boolean,
+    onEvent: (DeviceSettingsEvent) -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -184,10 +198,14 @@ private fun SettingsCard() {
                     title = "Usuń urządzenie",
                     subtitle = "Usuń urządzenie wraz z pomiarami",
                     onClick = {
-                        // TODO
+                        onEvent(DeviceSettingsEvent.DeleteDeviceClick)
                     },
                 ),
             ),
         )
+
+        if (isLoading) {
+            Loader(modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
     }
 }

@@ -78,7 +78,13 @@ sealed interface Screen {
             override val destination: Screen,
             override val popUpTo: Screen? = null,
             override val popUpToInclusive: Boolean = false,
-        ) : Direction
+        ) : Direction {
+            HOME(
+                destination = Home,
+                popUpTo = Home,
+                popUpToInclusive = true,
+            ),
+        }
     }
 
     object Alerts : Screen {
