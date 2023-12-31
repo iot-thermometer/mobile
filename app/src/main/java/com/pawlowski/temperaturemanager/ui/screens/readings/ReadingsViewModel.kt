@@ -5,7 +5,7 @@ import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetReadingsUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
-import com.pawlowski.temperaturemanager.ui.navigation.Screen
+import com.pawlowski.temperaturemanager.ui.navigation.Screen.Readings.ReadingsDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ internal class ReadingsViewModel @Inject constructor(
     private val getReadingsUseCase: GetReadingsUseCase,
     private val deviceSelectionUseCase: DeviceSelectionUseCase,
 ) :
-    BaseMviViewModel<ReadingsState, ReadingsEvent, Screen.Readings.ReadingsDirection>(
+    BaseMviViewModel<ReadingsState, ReadingsEvent, ReadingsDirection>(
         initialState = ReadingsState.Loading,
     ) {
 
@@ -64,6 +64,10 @@ internal class ReadingsViewModel @Inject constructor(
         when (event) {
             ReadingsEvent.BackClick -> {
                 pushNavigationEvent(Back)
+            }
+
+            ReadingsEvent.SettingsClick -> {
+                pushNavigationEvent(ReadingsDirection.DEVICE_SETTINGS)
             }
         }
     }

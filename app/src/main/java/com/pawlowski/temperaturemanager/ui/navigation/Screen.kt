@@ -65,6 +65,19 @@ sealed interface Screen {
             override val destination: Screen,
             override val popUpTo: Screen? = null,
             override val popUpToInclusive: Boolean = false,
+        ) : Direction {
+            DEVICE_SETTINGS(destination = DeviceSettings),
+        }
+    }
+
+    object DeviceSettings : Screen {
+        override val name: String = "DeviceSettings"
+        override val directions: List<Direction> = DeviceSettingsDirection.values().toList()
+
+        enum class DeviceSettingsDirection(
+            override val destination: Screen,
+            override val popUpTo: Screen? = null,
+            override val popUpToInclusive: Boolean = false,
         ) : Direction
     }
 
@@ -76,13 +89,7 @@ sealed interface Screen {
             override val destination: Screen,
             override val popUpTo: Screen? = null,
             override val popUpToInclusive: Boolean = false,
-        ) : Direction {
-            HOME(
-                destination = Home,
-                popUpTo = Home,
-                popUpToInclusive = true,
-            ),
-        }
+        ) : Direction
     }
 
     object Splash : Screen {

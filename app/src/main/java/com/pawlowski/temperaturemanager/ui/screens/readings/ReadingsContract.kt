@@ -20,4 +20,6 @@ sealed interface ReadingsState {
 sealed interface ReadingsEvent {
 
     object BackClick : ReadingsEvent
+
+    object SettingsClick : ReadingsEvent
 }

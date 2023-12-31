@@ -13,6 +13,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsScreen
 import com.pawlowski.temperaturemanager.ui.screens.alerts.AlertsViewModel
 import com.pawlowski.temperaturemanager.ui.screens.bluetoothOff.BluetoothOffScreen
+import com.pawlowski.temperaturemanager.ui.screens.deviceSettings.DeviceSettingsScreen
+import com.pawlowski.temperaturemanager.ui.screens.deviceSettings.DeviceSettingsViewModel
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeScreen
 import com.pawlowski.temperaturemanager.ui.screens.home.HomeViewModel
 import com.pawlowski.temperaturemanager.ui.screens.login.LoginScreen
@@ -105,7 +107,14 @@ fun RootComposable(
 
             wifiInfoViewModel.navigationFlow.observeNavigation(navController = navController)
         }
-
+        composable(route = Screen.DeviceSettings.name) {
+            val deviceSettingsViewModel = hiltViewModel<DeviceSettingsViewModel>()
+            DeviceSettingsScreen(
+                state = deviceSettingsViewModel.stateFlow.collectAsState().value,
+                onEvent = deviceSettingsViewModel::onNewEvent,
+            )
+            deviceSettingsViewModel.navigationFlow.observeNavigation(navController = navController)
+        }
         composable(route = Screen.Alerts.name) {
             val alertsViewModel = hiltViewModel<AlertsViewModel>()
             AlertsScreen(
