@@ -29,6 +29,7 @@ import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.ChooseIntervalsBottomSheet
+import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.ChooseNameBottomSheet
 import com.pawlowski.temperaturemanager.ui.utils.formatDDMMYYYYHHmm
 import java.util.Date
 
@@ -82,18 +83,18 @@ private fun Content(
     isLoading: Boolean,
     onEvent: (DeviceSettingsEvent) -> Unit,
 ) {
-    val showBottomSheet = remember {
+    val showIntervalsBottomSheet = remember {
         mutableStateOf(false)
     }
     ChooseIntervalsBottomSheet(
         initialReadingInterval = device.readingInterval,
         initialPushInterval = device.pushInterval,
-        show = showBottomSheet.value,
+        show = showIntervalsBottomSheet.value,
         onDismiss = {
-            showBottomSheet.value = false
+            showIntervalsBottomSheet.value = false
         },
         onConfirm = { readingInterval, pushInterval ->
-            showBottomSheet.value = false
+            showIntervalsBottomSheet.value = false
             onEvent(
                 DeviceSettingsEvent.OnIntervalsChange(
                     readingInterval = readingInterval,
@@ -102,6 +103,22 @@ private fun Content(
             )
         },
     )
+
+    val showNameBottomSheet = remember {
+        mutableStateOf(false)
+    }
+    ChooseNameBottomSheet(
+        initialName = device.name,
+        show = showNameBottomSheet.value,
+        onDismiss = {
+            showNameBottomSheet.value = false
+        },
+        onConfirm = { name ->
+            showNameBottomSheet.value = false
+            onEvent(DeviceSettingsEvent.OnNameChange(name = name))
+        },
+    )
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -116,9 +133,16 @@ private fun Content(
                 onEvent(DeviceSettingsEvent.DeleteDeviceClick)
             },
             onChangeIntervalsClick = {
-                showBottomSheet.value = true
+                if (!isLoading) {
+                    showIntervalsBottomSheet.value = true
+                }
             },
             isLoading = isLoading,
+            onNameChangeClick = {
+                if (!isLoading) {
+                    showNameBottomSheet.value = true
+                }
+            },
         )
     }
 }
@@ -175,6 +199,7 @@ private fun SettingsCard(
     isLoading: Boolean,
     onChangeIntervalsClick: () -> Unit,
     onDeleteDeviceClick: () -> Unit,
+    onNameChangeClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -204,7 +229,7 @@ private fun SettingsCard(
                     title = "Nazwa urządzenia",
                     subtitle = "Zmień nazwę urządzenia",
                     onClick = {
-                        // TODO
+                        onNameChangeClick()
                     },
                 ),
                 SettingsItem(

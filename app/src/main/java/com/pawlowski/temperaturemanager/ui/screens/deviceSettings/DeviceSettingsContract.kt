@@ -18,4 +18,8 @@ sealed interface DeviceSettingsEvent {
         val readingInterval: Long,
         val pushInterval: Long,
     ) : DeviceSettingsEvent
+
+    data class OnNameChange(
+        val name: String,
+    ) : DeviceSettingsEvent
 }

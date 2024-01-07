@@ -105,6 +105,34 @@ internal class DeviceSettingsViewModel @Inject constructor(
                     }
                 }
             }
+
+            is DeviceSettingsEvent.OnNameChange -> {
+                if (!actualState.isLoading) {
+                    updateState {
+                        copy(isLoading = true)
+                    }
+                    viewModelScope.launch {
+                        runCatching {
+                        }.onFailure {
+                            ensureActive()
+                            it.printStackTrace()
+                        }.onSuccess {
+                            updateState {
+                                copy(
+                                    deviceResource = deviceResource.getDataOrNull()?.let { device ->
+                                        Resource.Success(
+                                            data = device.copy(name = event.name),
+                                        )
+                                    } ?: deviceResource,
+                                )
+                            }
+                        }
+                        updateState {
+                            copy(isLoading = false)
+                        }
+                    }
+                }
+            }
         }
     }
 }
