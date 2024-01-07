@@ -45,8 +45,10 @@ fun HomeScreen(
     Column(verticalArrangement = Arrangement.spacedBy(space = 8.dp)) {
         Toolbar(
             trailing = Toolbar.ToolbarTrailing.Icon(
-                iconId = R.drawable.person,
-                onClick = {},
+                iconId = R.drawable.log_out,
+                onClick = {
+                    onEvent(HomeEvent.LogOutClick)
+                },
             ),
         )
         Box(modifier = Modifier.fillMaxSize()) {

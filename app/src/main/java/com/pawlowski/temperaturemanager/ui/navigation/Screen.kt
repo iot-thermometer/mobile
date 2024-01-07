@@ -25,9 +25,18 @@ sealed interface Screen {
         override val name: String = "Home"
         override val directions: List<Direction> = HomeDirection.values().toList()
 
-        enum class HomeDirection(override val destination: Screen) : Direction {
-            SEARCH_DEVICES(SearchDevices),
-            READINGS(Readings),
+        enum class HomeDirection(
+            override val destination: Screen,
+            override val popUpTo: Screen? = null,
+            override val popUpToInclusive: Boolean = false,
+        ) : Direction {
+            SEARCH_DEVICES(destination = SearchDevices),
+            READINGS(destination = Readings),
+            LOGIN(
+                destination = Login,
+                popUpTo = Home,
+                popUpToInclusive = true,
+            ),
         }
     }
 

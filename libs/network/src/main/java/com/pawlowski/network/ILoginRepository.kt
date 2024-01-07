@@ -10,4 +10,6 @@ interface ILoginRepository {
         email: String,
         password: String,
     )
+
+    suspend fun logOut()
 }

@@ -34,4 +34,8 @@ internal class LoginRepository @Inject constructor(
             authTokenRepository.saveToken(it)
         }
     }
+
+    override suspend fun logOut() {
+        authTokenRepository.removeToken()
+    }
 }

@@ -22,4 +22,10 @@ internal class AuthTokenRepository @Inject constructor(
         .first()
         .token
         ?.let(::AuthToken)
+
+    override suspend fun removeToken() {
+        dataStore.updateData {
+            AuthTokenDataStoreModel(token = null)
+        }
+    }
 }

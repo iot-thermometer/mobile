@@ -1,6 +1,7 @@
 package com.pawlowski.temperaturemanager.ui.screens.home
 
 import androidx.lifecycle.viewModelScope
+import com.pawlowski.network.ILoginRepository
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
@@ -15,6 +16,7 @@ import javax.inject.Inject
 internal class HomeViewModel @Inject constructor(
     private val getDevicesOverviewUseCase: GetDevicesOverviewUseCase,
     private val deviceSelectionUseCase: DeviceSelectionUseCase,
+    private val loginRepository: ILoginRepository,
 ) : BaseMviViewModel<HomeState, HomeEvent, Screen.Home.HomeDirection>(
     initialState = HomeState(
         devicesOverviewResource = Resource.Loading,
@@ -42,6 +44,13 @@ internal class HomeViewModel @Inject constructor(
             is HomeEvent.DeviceClick -> {
                 deviceSelectionUseCase.selectDevice(event.deviceId)
                 pushNavigationEvent(Screen.Home.HomeDirection.READINGS)
+            }
+
+            HomeEvent.LogOutClick -> {
+                viewModelScope.launch {
+                    loginRepository.logOut()
+                    pushNavigationEvent(Screen.Home.HomeDirection.LOGIN)
+                }
             }
         }
     }
