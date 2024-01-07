@@ -126,7 +126,7 @@ private fun Content(
 @Composable
 private fun DeviceInfo(
     name: String,
-    lastSeen: Long,
+    lastSeen: Long?,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(space = 10.dp),
@@ -160,7 +160,7 @@ private fun DeviceInfo(
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Ostatnio widziane: ${Date(lastSeen).formatDDMMYYYYHHmm()}",
+                text = "Ostatnio widziane: ${lastSeen?.let { Date(it).formatDDMMYYYYHHmm() } ?: "Brak"}",
                 fontSize = 10.sp,
                 fontWeight = FontWeight(400),
                 color = Color(0xFF5C5C5C),

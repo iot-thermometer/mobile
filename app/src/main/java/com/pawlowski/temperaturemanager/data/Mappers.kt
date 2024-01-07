@@ -23,7 +23,7 @@ fun Alert.toDomain(): AlertDomain = AlertDomain(
 fun Device.toDomain(): DeviceDomain = DeviceDomain(
     id = id,
     name = name,
-    recentlySeenAt = recentlySeenAt,
+    recentlySeenAt = recentlySeenAt.takeIf { it != 0L },
     pushInterval = pushInterval,
     readingInterval = readingInterval,
     token = token,
