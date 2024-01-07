@@ -94,6 +94,12 @@ private fun Content(
         },
         onConfirm = { readingInterval, pushInterval ->
             showBottomSheet.value = false
+            onEvent(
+                DeviceSettingsEvent.OnIntervalsChange(
+                    readingInterval = readingInterval,
+                    pushInterval = pushInterval,
+                ),
+            )
         },
     )
     Column(

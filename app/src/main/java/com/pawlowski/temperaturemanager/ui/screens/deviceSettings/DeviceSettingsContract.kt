@@ -13,4 +13,9 @@ sealed interface DeviceSettingsEvent {
     object BackClick : DeviceSettingsEvent
 
     object DeleteDeviceClick : DeviceSettingsEvent
+
+    data class OnIntervalsChange(
+        val readingInterval: Long,
+        val pushInterval: Long,
+    ) : DeviceSettingsEvent
 }
