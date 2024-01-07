@@ -8,7 +8,7 @@ import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.DeleteDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetDeviceByIdUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.UpdateDeviceIntervalsUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.UpdateDeviceUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.DeviceSettings.DeviceSettingsDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ internal class DeviceSettingsViewModel @Inject constructor(
     private val getDeviceByIdUseCase: GetDeviceByIdUseCase,
     deviceSelectionUseCase: DeviceSelectionUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
-    private val updateDeviceIntervalsUseCase: UpdateDeviceIntervalsUseCase,
+    private val updateDeviceUseCase: UpdateDeviceUseCase,
 ) : BaseMviViewModel<DeviceSettingsState, DeviceSettingsEvent, DeviceSettingsDirection>(
     initialState = DeviceSettingsState(
         deviceResource = Resource.Loading,
@@ -76,27 +76,31 @@ internal class DeviceSettingsViewModel @Inject constructor(
                         copy(isLoading = true)
                     }
                     viewModelScope.launch {
-                        runCatching {
-                            updateDeviceIntervalsUseCase(
-                                deviceId = deviceId,
-                                readingInterval = event.readingInterval,
-                                pushInterval = event.pushInterval,
-                            )
-                        }.onFailure {
-                            ensureActive()
-                            it.printStackTrace()
-                        }.onSuccess {
-                            updateState {
-                                copy(
-                                    deviceResource = deviceResource.getDataOrNull()?.let { device ->
-                                        Resource.Success(
-                                            data = device.copy(
-                                                readingInterval = event.readingInterval,
-                                                pushInterval = event.pushInterval,
-                                            ),
-                                        )
-                                    } ?: deviceResource,
+                        actualState.deviceResource.getDataOrNull()?.let { currentDevice ->
+                            runCatching {
+                                updateDeviceUseCase(
+                                    deviceId = deviceId,
+                                    readingInterval = event.readingInterval,
+                                    pushInterval = event.pushInterval,
+                                    name = currentDevice.name,
                                 )
+                            }.onFailure {
+                                ensureActive()
+                                it.printStackTrace()
+                            }.onSuccess {
+                                updateState {
+                                    copy(
+                                        deviceResource = deviceResource.getDataOrNull()
+                                            ?.let { device ->
+                                                Resource.Success(
+                                                    data = device.copy(
+                                                        readingInterval = event.readingInterval,
+                                                        pushInterval = event.pushInterval,
+                                                    ),
+                                                )
+                                            } ?: deviceResource,
+                                    )
+                                }
                             }
                         }
                         updateState {
@@ -112,21 +116,32 @@ internal class DeviceSettingsViewModel @Inject constructor(
                         copy(isLoading = true)
                     }
                     viewModelScope.launch {
-                        runCatching {
-                        }.onFailure {
-                            ensureActive()
-                            it.printStackTrace()
-                        }.onSuccess {
-                            updateState {
-                                copy(
-                                    deviceResource = deviceResource.getDataOrNull()?.let { device ->
-                                        Resource.Success(
-                                            data = device.copy(name = event.name),
-                                        )
-                                    } ?: deviceResource,
+                        actualState.deviceResource.getDataOrNull()?.let { currentDevice ->
+                            runCatching {
+                                updateDeviceUseCase(
+                                    deviceId = deviceId,
+                                    name = event.name,
+                                    pushInterval = currentDevice.pushInterval,
+                                    readingInterval = currentDevice.readingInterval,
                                 )
+                            }.onFailure {
+                                ensureActive()
+                                it.printStackTrace()
+                            }.onSuccess {
+                                updateState {
+                                    copy(
+                                        deviceResource = deviceResource.getDataOrNull()
+                                            ?.let { device ->
+                                                Resource.Success(
+                                                    data = device.copy(name = event.name),
+                                                )
+                                            } ?: deviceResource,
+                                    )
+                                }
+                                pushNavigationEvent(DeviceSettingsDirection.HOME)
                             }
                         }
+
                         updateState {
                             copy(isLoading = false)
                         }

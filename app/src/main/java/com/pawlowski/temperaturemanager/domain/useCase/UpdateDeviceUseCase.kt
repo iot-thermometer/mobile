@@ -3,19 +3,21 @@ package com.pawlowski.temperaturemanager.domain.useCase
 import com.pawlowski.temperaturemanager.data.ThermometerDataProvider
 import javax.inject.Inject
 
-class UpdateDeviceIntervalsUseCase @Inject constructor(
+class UpdateDeviceUseCase @Inject constructor(
     private val thermometerDataProvider: ThermometerDataProvider,
 ) {
 
     suspend operator fun invoke(
         deviceId: Long,
-        readingInterval: Long,
+        name: String,
         pushInterval: Long,
+        readingInterval: Long,
     ) {
         thermometerDataProvider.updateDevice(
             deviceId = deviceId,
             readingInterval = readingInterval,
             pushInterval = pushInterval,
+            name = name,
         )
     }
 }

@@ -75,6 +75,7 @@ class ThermometerDataProvider @Inject constructor(
         deviceId: Long,
         readingInterval: Long,
         pushInterval: Long,
+        name: String,
     ) {
         authorizedUnary(
             method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::updateDevice,
@@ -82,6 +83,7 @@ class ThermometerDataProvider @Inject constructor(
                 .setId(deviceId)
                 .setPushInterval(pushInterval)
                 .setReadingInterval(readingInterval)
+                .setName(name)
                 .build(),
         )
     }
