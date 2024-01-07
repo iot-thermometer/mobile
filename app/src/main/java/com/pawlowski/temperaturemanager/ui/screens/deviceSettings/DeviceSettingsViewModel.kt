@@ -8,10 +8,10 @@ import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.DeleteDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetDeviceByIdUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.UpdateDeviceIntervalsUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.DeviceSettings.DeviceSettingsDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +21,7 @@ internal class DeviceSettingsViewModel @Inject constructor(
     private val getDeviceByIdUseCase: GetDeviceByIdUseCase,
     deviceSelectionUseCase: DeviceSelectionUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
+    private val updateDeviceIntervalsUseCase: UpdateDeviceIntervalsUseCase,
 ) : BaseMviViewModel<DeviceSettingsState, DeviceSettingsEvent, DeviceSettingsDirection>(
     initialState = DeviceSettingsState(
         deviceResource = Resource.Loading,
@@ -76,7 +77,11 @@ internal class DeviceSettingsViewModel @Inject constructor(
                     }
                     viewModelScope.launch {
                         runCatching {
-                            delay(5000)
+                            updateDeviceIntervalsUseCase(
+                                deviceId = deviceId,
+                                readingInterval = event.readingInterval,
+                                pushInterval = event.pushInterval,
+                            )
                         }.onFailure {
                             ensureActive()
                             it.printStackTrace()

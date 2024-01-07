@@ -12,6 +12,7 @@ import com.thermometer.proto.ListAlertsRequest
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ListReadingsRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt
+import com.thermometer.proto.UpdateDeviceRequest
 import javax.inject.Inject
 
 class ThermometerDataProvider @Inject constructor(
@@ -66,6 +67,21 @@ class ThermometerDataProvider @Inject constructor(
             method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::deleteDevice,
             request = DeleteDeviceRequest.newBuilder()
                 .setId(deviceId)
+                .build(),
+        )
+    }
+
+    suspend fun updateDevice(
+        deviceId: Long,
+        readingInterval: Long,
+        pushInterval: Long,
+    ) {
+        authorizedUnary(
+            method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::updateDevice,
+            request = UpdateDeviceRequest.newBuilder()
+                .setId(deviceId)
+                .setPushInterval(pushInterval)
+                .setReadingInterval(readingInterval)
                 .build(),
         )
     }
