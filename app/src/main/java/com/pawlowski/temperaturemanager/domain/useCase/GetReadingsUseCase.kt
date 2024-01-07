@@ -8,7 +8,7 @@ class GetReadingsUseCase @Inject constructor(
     private val thermometerDataProvider: ThermometerDataProvider,
 ) {
 
-    suspend operator fun invoke(deviceId: Long): List<ReadingDomain> = listOf(
+    suspend operator fun invoke(deviceId: Long): List<ReadingDomain> = /*listOf(
         ReadingDomain(
             temperature = 30.5f,
             soilMoisture = 19.2f,
@@ -24,6 +24,6 @@ class GetReadingsUseCase @Inject constructor(
             soilMoisture = 19.2f,
             measuredAt = 1703979822000,
         ),
-    )/*thermometerDataProvider
-        .listReadings(deviceId = deviceId)*/
+    )*/thermometerDataProvider
+        .listReadings(deviceId = deviceId)
 }
