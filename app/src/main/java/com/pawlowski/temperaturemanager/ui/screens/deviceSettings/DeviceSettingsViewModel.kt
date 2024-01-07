@@ -148,6 +148,10 @@ internal class DeviceSettingsViewModel @Inject constructor(
                     }
                 }
             }
+
+            DeviceSettingsEvent.AlertsClick -> {
+                pushNavigationEvent(DeviceSettingsDirection.ALERTS)
+            }
         }
     }
 }

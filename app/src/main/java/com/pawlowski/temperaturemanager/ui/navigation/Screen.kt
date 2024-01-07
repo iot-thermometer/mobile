@@ -93,6 +93,7 @@ sealed interface Screen {
                 popUpTo = Home,
                 popUpToInclusive = true,
             ),
+            ALERTS(destination = Alerts),
         }
     }
 

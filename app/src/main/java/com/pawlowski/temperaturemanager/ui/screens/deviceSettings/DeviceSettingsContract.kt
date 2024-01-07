@@ -22,4 +22,6 @@ sealed interface DeviceSettingsEvent {
     data class OnNameChange(
         val name: String,
     ) : DeviceSettingsEvent
+
+    object AlertsClick : DeviceSettingsEvent
 }

@@ -143,6 +143,11 @@ private fun Content(
                     showNameBottomSheet.value = true
                 }
             },
+            onAlertsClick = {
+                if (!isLoading) {
+                    onEvent(DeviceSettingsEvent.AlertsClick)
+                }
+            },
         )
     }
 }
@@ -200,6 +205,7 @@ private fun SettingsCard(
     onChangeIntervalsClick: () -> Unit,
     onDeleteDeviceClick: () -> Unit,
     onNameChangeClick: () -> Unit,
+    onAlertsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -238,7 +244,7 @@ private fun SettingsCard(
                     title = "Alerty",
                     subtitle = "Dostawaj alerty o pomiarach",
                     onClick = {
-                        // TODO
+                        onAlertsClick()
                     },
                 ),
             ),

@@ -5,6 +5,7 @@ import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.GetAlertsUseCase
+import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -34,5 +35,10 @@ internal class AlertsViewModel @Inject constructor(
     }
 
     override fun onNewEvent(event: AlertsEvent) {
+        when (event) {
+            is AlertsEvent.OnBackClick -> {
+                pushNavigationEvent(Back)
+            }
+        }
     }
 }

@@ -7,4 +7,7 @@ data class AlertsState(
     val alertsResource: Resource<List<AlertDomain>>,
 )
 
-sealed interface AlertsEvent
+sealed interface AlertsEvent {
+
+    object OnBackClick : AlertsEvent
+}
