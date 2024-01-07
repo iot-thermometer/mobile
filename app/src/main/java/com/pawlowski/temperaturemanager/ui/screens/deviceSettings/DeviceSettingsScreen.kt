@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,7 @@ import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
+import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.ChooseIntervalsBottomSheet
 import com.pawlowski.temperaturemanager.ui.utils.formatDDMMYYYYHHmm
 import java.util.Date
 
@@ -79,6 +82,20 @@ private fun Content(
     isLoading: Boolean,
     onEvent: (DeviceSettingsEvent) -> Unit,
 ) {
+    val showBottomSheet = remember {
+        mutableStateOf(false)
+    }
+    ChooseIntervalsBottomSheet(
+        initialReadingInterval = device.readingInterval,
+        initialPushInterval = device.pushInterval,
+        show = showBottomSheet.value,
+        onDismiss = {
+            showBottomSheet.value = false
+        },
+        onConfirm = { readingInterval, pushInterval ->
+            showBottomSheet.value = false
+        },
+    )
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,7 +106,12 @@ private fun Content(
             lastSeen = device.recentlySeenAt,
         )
         SettingsCard(
-            onEvent = onEvent,
+            onDeleteDeviceClick = {
+                onEvent(DeviceSettingsEvent.DeleteDeviceClick)
+            },
+            onChangeIntervalsClick = {
+                showBottomSheet.value = true
+            },
             isLoading = isLoading,
         )
     }
@@ -145,7 +167,8 @@ private fun DeviceInfo(
 @Composable
 private fun SettingsCard(
     isLoading: Boolean,
-    onEvent: (DeviceSettingsEvent) -> Unit,
+    onChangeIntervalsClick: () -> Unit,
+    onDeleteDeviceClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -166,7 +189,7 @@ private fun SettingsCard(
                     title = "Częstotliwość odczytów",
                     subtitle = "Ustaw częstotliwość odczytów",
                     onClick = {
-                        // TODO
+                        onChangeIntervalsClick()
                     },
                 ),
                 SettingsItem(
@@ -197,9 +220,7 @@ private fun SettingsCard(
                     iconBackgroundColor = Color(0xFFF15C5C),
                     title = "Usuń urządzenie",
                     subtitle = "Usuń urządzenie wraz z pomiarami",
-                    onClick = {
-                        onEvent(DeviceSettingsEvent.DeleteDeviceClick)
-                    },
+                    onClick = onDeleteDeviceClick,
                 ),
             ),
         )

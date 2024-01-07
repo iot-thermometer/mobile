@@ -6,10 +6,8 @@
 
     <!-- Necessary to perform any Bluetooth classic or BLE communication, such as requesting a
     connection, accepting a connection, and transferring data. -->
-    <uses-permission
-        android:name="android.permission.BLUETOOTH" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
@@ -17,6 +15,7 @@
         tools:targetApi="s" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
@@ -48,7 +47,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.TemperatureManager">
+            android:theme="@style/Theme.TemperatureManager"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
