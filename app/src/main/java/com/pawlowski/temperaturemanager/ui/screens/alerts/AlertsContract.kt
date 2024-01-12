@@ -10,4 +10,11 @@ data class AlertsState(
 sealed interface AlertsEvent {
 
     object OnBackClick : AlertsEvent
+
+    data class OnAddAlert(
+        val minTemp: Float?,
+        val maxTemp: Float?,
+        val minSoil: Float?,
+        val maxSoil: Float?,
+    ) : AlertsEvent
 }

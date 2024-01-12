@@ -17,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +28,7 @@ import com.pawlowski.temperaturemanager.domain.models.AlertDomain
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.PlusButton
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
-import com.pawlowski.temperaturemanager.ui.screens.home.HomeEvent
+import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.AddAlertBottomSheet
 
 @Composable
 internal fun AlertsScreen(
@@ -78,10 +80,28 @@ private fun Content(
                 AlertCard(alert = it)
             }
         }
+        val showAlertBottomSheet = remember {
+            mutableStateOf(false)
+        }
+        AddAlertBottomSheet(
+            show = showAlertBottomSheet.value,
+            onDismiss = { showAlertBottomSheet.value = false },
+            onConfirm = { minTemp, maxTemp, minSoil, maxSoil ->
+                showAlertBottomSheet.value = false
+                onEvent(
+                    AlertsEvent.OnAddAlert(
+                        minTemp = minTemp,
+                        maxTemp = maxTemp,
+                        minSoil = minSoil,
+                        maxSoil = maxSoil,
+                    ),
+                )
+            },
+        )
 
         PlusButton(
             onClick = {
-
+                showAlertBottomSheet.value = true
             },
             modifier = Modifier
                 .padding(all = 20.dp)

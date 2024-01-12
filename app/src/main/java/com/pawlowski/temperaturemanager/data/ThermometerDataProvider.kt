@@ -6,6 +6,7 @@ import com.pawlowski.network.IThermometerServiceProvider
 import com.pawlowski.temperaturemanager.domain.models.AlertDomain
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
+import com.thermometer.proto.CreateAlertRequest
 import com.thermometer.proto.CreateDeviceRequest
 import com.thermometer.proto.DeleteDeviceRequest
 import com.thermometer.proto.ListAlertsRequest
@@ -61,6 +62,25 @@ class ThermometerDataProvider @Inject constructor(
     }.map {
         it.toDomain()
     }
+
+    suspend fun createAlerts(
+        deviceId: Long,
+        name: String,
+        minTemp: Float?,
+        maxTemp: Float?,
+        minSoil: Float?,
+        maxSoil: Float?,
+    ) = authorizedUnary(
+        method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::createAlert,
+        request = CreateAlertRequest.newBuilder().apply {
+            setName(name)
+            deviceID = deviceId
+            temperatureMin = minTemp ?: -1000f
+            temperatureMax = maxTemp ?: 1000f
+            soilMoistureMin = minSoil ?: -1000f
+            soilMoistureMax = maxSoil ?: 1000f
+        }.build(),
+    )
 
     suspend fun deleteDevice(deviceId: Long) {
         authorizedUnary(
