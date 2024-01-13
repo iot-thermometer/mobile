@@ -61,7 +61,7 @@ sealed interface Screen {
             HOME(
                 destination = Home,
                 popUpTo = Home,
-                popUpToInclusive = false,
+                popUpToInclusive = true,
             ),
         }
     }

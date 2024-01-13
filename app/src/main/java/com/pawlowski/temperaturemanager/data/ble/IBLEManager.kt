@@ -13,4 +13,6 @@ interface IBLEManager {
         ssid: String,
         password: String,
     )
+
+    fun clearCache()
 }

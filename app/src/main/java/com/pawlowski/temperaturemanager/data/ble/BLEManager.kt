@@ -15,66 +15,75 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class BLEManager @Inject constructor() : IBLEManager {
-
-    private val scanner by lazy {
-        Scanner { }
-    }
-
-    private val scope = CoroutineScope(Dispatchers.IO)
-
-    private val advertisements = hashMapOf<String, AndroidAdvertisement>()
-
-    override fun getScannedDevices(): Flow<List<BluetoothDeviceAdvertisement>> = scanner
-        .advertisements
-        .onStart {
-            println("Started searching")
+internal class BLEManager
+    @Inject
+    constructor() : IBLEManager {
+        private val scanner by lazy {
+            Scanner { }
         }
-        .map {
-            advertisements[it.address] = it
-            advertisements.values.toList()
+
+        private val scope = CoroutineScope(Dispatchers.IO)
+
+        private val advertisements = hashMapOf<String, AndroidAdvertisement>()
+
+        override fun getScannedDevices(): Flow<List<BluetoothDeviceAdvertisement>> =
+            scanner
+                .advertisements
+                .onStart {
+                    println("Started searching")
+                }
                 .map {
-                    BluetoothDeviceAdvertisement(
-                        name = it.name ?: "Unnamed",
-                        macAddress = it.address,
-                    )
+                    advertisements[it.address] = it
+                    advertisements.values.toList()
+                        .map {
+                            BluetoothDeviceAdvertisement(
+                                name = it.name ?: "Unnamed",
+                                macAddress = it.address,
+                            )
+                        }
                 }
+
+        override suspend fun sendMessageToDevice(
+            bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
+            token: String,
+            id: Long,
+            ssid: String,
+            password: String,
+        ) {
+            val advertisement =
+                advertisements[bluetoothDeviceAdvertisement.macAddress]
+                    ?: throw BluetoothException.MissingAdvertisement
+
+            val peripheral =
+                scope
+                    .peripheral(advertisement = advertisement) {
+                        onServicesDiscovered {
+                            requestMtu(100)
+                        }
+                    }
+
+            peripheral.connect()
+
+            val writeCharacteristics =
+                peripheral.services?.firstNotNullOfOrNull {
+                    it.characteristics.firstOrNull {
+                        it.properties.write
+                    }
+                } ?: throw BluetoothException.CharacteristicsNotFound
+
+            val textToSend =
+                "{\"ssid\":\"$ssid\",\"password\":\"$password\", \"token\":\"${token}\",\"id\":$id}"
+
+            peripheral.write(
+                characteristic = writeCharacteristics,
+                textToSend.toByteArray(),
+            )
+            println("Write success, waiting for disconnect")
+
+            peripheral.disconnect()
         }
 
-    override suspend fun sendMessageToDevice(
-        bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
-        token: String,
-        id: Long,
-        ssid: String,
-        password: String,
-    ) {
-        val advertisement = advertisements[bluetoothDeviceAdvertisement.macAddress]
-            ?: throw BluetoothException.MissingAdvertisement
-
-        val peripheral = scope
-            .peripheral(advertisement = advertisement) {
-                onServicesDiscovered {
-                    requestMtu(100)
-                }
-            }
-
-        peripheral.connect()
-
-        val writeCharacteristics = peripheral.services?.firstNotNullOfOrNull {
-            it.characteristics.firstOrNull {
-                it.properties.write
-            }
-        } ?: throw BluetoothException.CharacteristicsNotFound
-
-        val textToSend =
-            "{\"ssid\":\"$ssid\",\"password\":\"$password\", \"token\":\"${token}\",\"id\":$id}"
-
-        peripheral.write(
-            characteristic = writeCharacteristics,
-            textToSend.toByteArray(),
-        )
-        println("Write success, waiting for disconnect")
-
-        peripheral.disconnect()
+        override fun clearCache() {
+            advertisements.clear()
+        }
     }
-}

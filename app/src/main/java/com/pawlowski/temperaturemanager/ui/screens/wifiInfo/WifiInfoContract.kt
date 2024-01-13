@@ -4,6 +4,7 @@ import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertiseme
 
 sealed interface WifiInfoState {
     object Initialising : WifiInfoState
+
     data class Content(
         val chosenAdvertisement: BluetoothDeviceAdvertisement,
         val ssidInput: String = "",
@@ -11,12 +12,11 @@ sealed interface WifiInfoState {
         val passwordInput: String = "",
         val passwordError: String? = null,
         val isLoading: Boolean = false,
-        val pairingError: String? = null,
+        val pairingError: Boolean = false,
     ) : WifiInfoState
 }
 
 sealed interface WifiInfoEvent {
-
     object ContinueClick : WifiInfoEvent
 
     data class ChangeSsid(val newSsid: String) : WifiInfoEvent
@@ -24,4 +24,6 @@ sealed interface WifiInfoEvent {
     data class ChangePassword(val newPassword: String) : WifiInfoEvent
 
     object BackClick : WifiInfoEvent
+
+    object RetryClick : WifiInfoEvent
 }

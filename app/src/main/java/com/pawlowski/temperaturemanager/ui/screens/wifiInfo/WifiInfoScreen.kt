@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
+import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.PasswordTextField
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 
@@ -55,85 +56,107 @@ fun WifiInfoScreen(
                             },
                         ),
                 )
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(space = 32.dp),
-                    modifier =
-                        Modifier.verticalScroll(rememberScrollState())
-                            .padding(top = 32.dp),
-                ) {
-                    Column(
-                        modifier =
-                            Modifier
-                                .padding(horizontal = 10.dp)
-                                .clip(shape = RoundedCornerShape(size = 12.dp))
-                                .background(color = Color(0xFF70778B))
-                                .fillMaxWidth()
-                                .padding(horizontal = 5.dp, vertical = 5.dp),
-                        verticalArrangement = Arrangement.spacedBy(0.dp),
-                    ) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.device),
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(50.dp),
-                            )
-                            Text(
-                                text = state.chosenAdvertisement.name,
-                                color = Color.White,
-                                fontSize = 30.sp,
-                                modifier = Modifier.padding(vertical = 10.dp),
-                            )
-                        }
-                        Text(
-                            text = "MAC: " + state.chosenAdvertisement.macAddress,
-                            color = Color.White,
-                            fontSize = 20.sp,
+                when {
+                    state.pairingError -> {
+                        ErrorItem(
+                            onRetry = {
+                                onEvent(WifiInfoEvent.RetryClick)
+                            },
                         )
                     }
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        SingleInputColumn(
-                            ssidInput = state.ssidInput,
-                            header = "Wpisz SSID: ",
-                            label = "SSID",
-                            onValueChange = { onEvent(WifiInfoEvent.ChangeSsid(it)) },
-                        )
-                        if (state.ssidError != null) {
-                            Text(
-                                text = state.ssidError,
-                                color = Color.Red,
-                                modifier = Modifier.absolutePadding(left = 45.dp),
-                            )
+
+                    else -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(space = 32.dp),
+                            modifier =
+                                Modifier.verticalScroll(rememberScrollState())
+                                    .padding(top = 32.dp),
+                        ) {
+                            Column(
+                                modifier =
+                                    Modifier
+                                        .padding(horizontal = 10.dp)
+                                        .clip(shape = RoundedCornerShape(size = 12.dp))
+                                        .background(color = Color(0xFF70778B))
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 5.dp, vertical = 5.dp),
+                                verticalArrangement = Arrangement.spacedBy(0.dp),
+                            ) {
+                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.device),
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(50.dp),
+                                    )
+                                    Text(
+                                        text = state.chosenAdvertisement.name,
+                                        color = Color.White,
+                                        fontSize = 30.sp,
+                                        modifier = Modifier.padding(vertical = 10.dp),
+                                    )
+                                }
+                                Text(
+                                    text = "MAC: " + state.chosenAdvertisement.macAddress,
+                                    color = Color.White,
+                                    fontSize = 20.sp,
+                                )
+                            }
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                SingleInputColumn(
+                                    ssidInput = state.ssidInput,
+                                    header = "Wpisz SSID: ",
+                                    label = "SSID",
+                                    onValueChange = { onEvent(WifiInfoEvent.ChangeSsid(it)) },
+                                )
+                                if (state.ssidError != null) {
+                                    Text(
+                                        text = state.ssidError,
+                                        color = Color.Red,
+                                        modifier = Modifier.absolutePadding(left = 45.dp),
+                                    )
+                                }
+                            }
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                SingleInputColumn(
+                                    state.passwordInput,
+                                    "Wpisz Hasło: ",
+                                    "Hasło",
+                                    onValueChange = { onEvent(WifiInfoEvent.ChangePassword(it)) },
+                                )
+                                if (state.passwordError != null) {
+                                    Text(
+                                        state.passwordError,
+                                        color = Color.Red,
+                                        modifier = Modifier.absolutePadding(left = 45.dp),
+                                    )
+                                }
+                            }
+                            if (state.isLoading) {
+                                CircularProgressIndicator(modifier = Modifier.absolutePadding(left = 200.dp))
+                            }
+                            Button(
+                                onClick = { onEvent(WifiInfoEvent.ContinueClick) },
+                                enabled = !state.isLoading,
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 90.dp),
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor =
+                                            Color(
+                                                0xFF001D4B,
+                                            ),
+                                    ),
+                            ) {
+                                Text(
+                                    "Continue",
+                                    modifier = Modifier.padding(all = 10.dp),
+                                    fontSize = 20.sp,
+                                )
+                            }
                         }
-                    }
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        SingleInputColumn(
-                            state.passwordInput,
-                            "Wpisz Hasło: ",
-                            "Hasło",
-                            onValueChange = { onEvent(WifiInfoEvent.ChangePassword(it)) },
-                        )
-                        if (state.passwordError != null) {
-                            Text(
-                                state.passwordError,
-                                color = Color.Red,
-                                modifier = Modifier.absolutePadding(left = 45.dp),
-                            )
-                        }
-                    }
-                    if (state.isLoading) {
-                        CircularProgressIndicator(modifier = Modifier.absolutePadding(left = 200.dp))
-                    }
-                    Button(
-                        onClick = { onEvent(WifiInfoEvent.ContinueClick) },
-                        enabled = !state.isLoading,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 90.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF001D4B)),
-                    ) {
-                        Text("Continue", modifier = Modifier.padding(all = 10.dp), fontSize = 20.sp)
                     }
                 }
             }

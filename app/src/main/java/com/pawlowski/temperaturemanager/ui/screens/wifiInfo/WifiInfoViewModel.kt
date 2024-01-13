@@ -3,8 +3,9 @@ package com.pawlowski.temperaturemanager.ui.screens.wifiInfo
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.RetrySharedFlow
 import com.pawlowski.temperaturemanager.domain.models.BluetoothDeviceAdvertisement
-import com.pawlowski.temperaturemanager.domain.resourceFlow
+import com.pawlowski.temperaturemanager.domain.resourceFlowWithRetrying
 import com.pawlowski.temperaturemanager.domain.useCase.devices.PairWithDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.pairing.AdvertisementSelectionUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
@@ -23,6 +24,8 @@ internal class WifiInfoViewModel
     BaseMviViewModel<WifiInfoState, WifiInfoEvent, Screen.WifiInfo.WifiInfoDirection>(
             initialState = WifiInfoState.Initialising,
         ) {
+        private val retrySharedFlow = RetrySharedFlow()
+
         override fun initialised() {
             val currentAdvertisement =
                 selectionUseCase.getSelectedAdvertisement().value!!
@@ -34,13 +37,6 @@ internal class WifiInfoViewModel
             }
         }
 
-        //    fun onSsidInputChange(newSsidInput: String) {
-//        updateState {
-//            WifiInfoState.Content(
-//                ssidInput = newSsidInput,
-//            )
-//        }
-//    }
         override fun onNewEvent(event: WifiInfoEvent) {
             when (event) {
                 is WifiInfoEvent.ContinueClick -> onContinue()
@@ -62,17 +58,25 @@ internal class WifiInfoViewModel
                         )
                     }
                 }
+
+                WifiInfoEvent.RetryClick -> {
+                    retrySharedFlow.sendRetryEvent()
+                }
             }
         }
 
         private fun onContinue() {
             getContentOrNull()?.let { currentState ->
+                if (currentState.isLoading) {
+                    return@let
+                }
+
                 val ssid = currentState.ssidInput
                 val password = currentState.passwordInput
 
                 updateStateIfContent {
                     copy(
-                        pairingError = null,
+                        pairingError = false,
                         ssidError = null,
                         passwordError = null,
                     )
@@ -124,7 +128,7 @@ internal class WifiInfoViewModel
             password: String,
         ) {
             viewModelScope.launch {
-                resourceFlow {
+                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                     pairWithDeviceUseCase(
                         deviceName = chosenAdvertisement.name,
                         ssid = ssid,
@@ -135,7 +139,10 @@ internal class WifiInfoViewModel
                     when (it) {
                         is Resource.Success -> {
                             updateStateIfContent {
-                                copy(isLoading = false)
+                                copy(
+                                    isLoading = false,
+                                    pairingError = false,
+                                )
                             }
                             pushNavigationEvent(direction = Screen.WifiInfo.WifiInfoDirection.HOME)
                         }
@@ -144,14 +151,17 @@ internal class WifiInfoViewModel
                             updateStateIfContent {
                                 copy(
                                     isLoading = false,
-                                    pairingError = it.throwable.message ?: "Error",
+                                    pairingError = true,
                                 )
                             }
                         }
 
                         is Resource.Loading -> {
                             updateStateIfContent {
-                                copy(isLoading = true)
+                                copy(
+                                    isLoading = true,
+                                    pairingError = false,
+                                )
                             }
                         }
                     }

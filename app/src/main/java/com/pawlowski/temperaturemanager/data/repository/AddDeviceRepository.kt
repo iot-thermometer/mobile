@@ -11,42 +11,44 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class AddDeviceRepository @Inject constructor(
-    private val thermometerDataProvider: ThermometerDataProvider,
-    private val bleManager: IBLEManager,
-) {
-
-    private val selectedAdvertisementFlow: MutableStateFlow<BluetoothDeviceAdvertisement?> =
-        MutableStateFlow(null)
-
-    suspend fun pairWithDevice(
-        deviceName: String,
-        ssid: String,
-        password: String,
-        bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
+internal class AddDeviceRepository
+    @Inject
+    constructor(
+        private val thermometerDataProvider: ThermometerDataProvider,
+        private val bleManager: IBLEManager,
     ) {
-        val device = thermometerDataProvider.createDevice(
-            name = deviceName,
-            pushInterval = 10,
-            readingInterval = 1,
-        )
+        private val selectedAdvertisementFlow: MutableStateFlow<BluetoothDeviceAdvertisement?> =
+            MutableStateFlow(null)
 
-        bleManager.sendMessageToDevice(
-            bluetoothDeviceAdvertisement = bluetoothDeviceAdvertisement,
-            ssid = ssid,
-            password = password,
-            id = device.id,
-            token = device.token,
-        )
+        suspend fun pairWithDevice(
+            deviceName: String,
+            ssid: String,
+            password: String,
+            bluetoothDeviceAdvertisement: BluetoothDeviceAdvertisement,
+        ) {
+            val device =
+                thermometerDataProvider.createDevice(
+                    name = deviceName,
+                    pushInterval = 10,
+                    readingInterval = 60,
+                )
+
+            bleManager.sendMessageToDevice(
+                bluetoothDeviceAdvertisement = bluetoothDeviceAdvertisement,
+                ssid = ssid,
+                password = password,
+                id = device.id,
+                token = device.token,
+            )
+
+            bleManager.clearCache()
+        }
+
+        fun scanNearbyDevices(): Flow<List<BluetoothDeviceAdvertisement>> = bleManager.getScannedDevices()
+
+        fun selectAdvertisement(advertisement: BluetoothDeviceAdvertisement) {
+            selectedAdvertisementFlow.value = advertisement
+        }
+
+        fun getSelectedAdvertisement(): StateFlow<BluetoothDeviceAdvertisement?> = selectedAdvertisementFlow.asStateFlow()
     }
-
-    fun scanNearbyDevices(): Flow<List<BluetoothDeviceAdvertisement>> =
-        bleManager.getScannedDevices()
-
-    fun selectAdvertisement(advertisement: BluetoothDeviceAdvertisement) {
-        selectedAdvertisementFlow.value = advertisement
-    }
-
-    fun getSelectedAdvertisement(): StateFlow<BluetoothDeviceAdvertisement?> =
-        selectedAdvertisementFlow.asStateFlow()
-}
