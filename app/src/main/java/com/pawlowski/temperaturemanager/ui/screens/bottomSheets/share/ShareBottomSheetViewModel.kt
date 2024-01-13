@@ -52,17 +52,24 @@ internal class ShareBottomSheetViewModel
                     updateState {
                         copy(contentState = ContentState.Error)
                     }
+                }.onSuccess {
+                    updateState {
+                        copy(contentState = ContentState.MembersList(membersState = emptyList()))
+                    }
                 }
             }
 
-            searchTextFlow()
-                .combine(currentMembers) { searchText, currentMembers ->
-                    if (currentMembers == null) {
-                        null
-                    } else {
-                        searchText to currentMembers
-                    }
-                }.filterNotNull()
+            combine(
+                searchTextFlow(),
+                currentMembers,
+                isLoadingFlow(),
+            ) { searchText, currentMembers, isLoading ->
+                if (currentMembers == null || isLoading) {
+                    null
+                } else {
+                    searchText to currentMembers
+                }
+            }.filterNotNull()
                 .map { (searchText, currentMembers) ->
                     val matchingMembers =
                         currentMembers.filter {
@@ -100,6 +107,11 @@ internal class ShareBottomSheetViewModel
                 it.searchText.trim()
             }.distinctUntilChanged()
 
+        private fun isLoadingFlow(): Flow<Boolean> =
+            stateFlow
+                .map { it.contentState is ContentState.Loading }
+                .distinctUntilChanged()
+
         override fun onNewEvent(event: ShareBottomSheetEvent) {
             when (event) {
                 is ShareBottomSheetEvent.SearchTextChange -> {
@@ -126,15 +138,25 @@ internal class ShareBottomSheetViewModel
                             }.onFailure {
                                 ensureActive()
                                 it.printStackTrace()
-                                println("Error $it")
+
+                                updateState {
+                                    copy(
+                                        contentState =
+                                            ContentState.MembersList(
+                                                membersState = emptyList(),
+                                            ),
+                                    )
+                                }
                             }.onSuccess {
                                 updateState {
-                                    copy(searchText = "")
+                                    copy(
+                                        searchText = "",
+                                        contentState =
+                                            ContentState.MembersList(
+                                                membersState = emptyList(),
+                                            ),
+                                    )
                                 }
-                            }
-
-                            updateState {
-                                copy(contentState = ContentState.MembersList(membersState = emptyList()))
                             }
                         }
                     }
