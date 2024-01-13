@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.pawlowski.temperaturemanager.ui.components.PasswordTextField
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     state: LoginState,
@@ -28,14 +27,17 @@ fun LoginScreen(
                 onEvent(LoginEvent.EmailChange(it))
             },
             singleLine = true,
+            label = {
+                Text(text = "E-mail")
+            },
         )
 
-        TextField(
-            value = state.password,
+        PasswordTextField(
+            text = state.password,
             onValueChange = {
                 onEvent(LoginEvent.PasswordChange(it))
             },
-            singleLine = true,
+            label = "Hasło",
         )
 
         Button(onClick = { onEvent(LoginEvent.LoginClick) }) {
