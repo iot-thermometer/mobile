@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.models.AlertDomain
+import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.PlusButton
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
@@ -67,7 +68,11 @@ internal fun AlertsScreen(
             }
 
             state.alertsResource is Resource.Error -> {
-                Text(text = "Something went wrong")
+                ErrorItem(
+                    onRetry = {
+                              onEvent(AlertsEvent.RetryClick)
+                    },
+                )
             }
         }
     }

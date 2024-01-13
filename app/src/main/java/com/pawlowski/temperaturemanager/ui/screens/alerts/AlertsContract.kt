@@ -20,4 +20,6 @@ sealed interface AlertsEvent {
     ) : AlertsEvent
 
     data class DeleteAlert(val alertId: Long) : AlertsEvent
+
+    object RetryClick : AlertsEvent
 }

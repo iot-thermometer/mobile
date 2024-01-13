@@ -3,8 +3,9 @@ package com.pawlowski.temperaturemanager.ui.screens.alerts
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.RetrySharedFlow
 import com.pawlowski.temperaturemanager.domain.getDataOrNull
-import com.pawlowski.temperaturemanager.domain.resourceFlow
+import com.pawlowski.temperaturemanager.domain.resourceFlowWithRetrying
 import com.pawlowski.temperaturemanager.domain.useCase.alerts.AddAlertUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.alerts.DeleteAlertUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.alerts.GetAlertsUseCase
@@ -33,10 +34,11 @@ internal class AlertsViewModel
                 ),
         ) {
         private val deviceId = deviceSelectionUseCase.getSelectedDeviceId()!!
+        private val retrySharedFlow = RetrySharedFlow()
 
         override fun initialised() {
             viewModelScope.launch {
-                resourceFlow {
+                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                     getAlertsUseCase(deviceId = deviceId)
                 }.collectLatest {
                     updateState {
@@ -119,6 +121,10 @@ internal class AlertsViewModel
                             copy(isActionInProgress = false)
                         }
                     }
+                }
+
+                AlertsEvent.RetryClick -> {
+                    retrySharedFlow.sendRetryEvent()
                 }
             }
         }
