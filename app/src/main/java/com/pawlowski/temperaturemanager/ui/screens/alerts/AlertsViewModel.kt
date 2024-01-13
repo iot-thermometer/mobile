@@ -69,6 +69,12 @@ internal class AlertsViewModel
                                 maxSoil = event.maxSoil,
                                 name = event.name,
                             )
+
+                            getAlertsUseCase(deviceId = deviceId).also {
+                                updateState {
+                                    copy(alertsResource = Resource.Success(it))
+                                }
+                            }
                         }.onFailure {
                             ensureActive()
                             it.printStackTrace()
