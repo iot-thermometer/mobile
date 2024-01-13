@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
-class BottomSheetScope constructor(
+class BottomSheetScope(
     private val scope: CoroutineScope,
     private val bottomSheetState: SheetState,
     private val onDismiss: () -> Unit,
@@ -39,7 +39,7 @@ fun BaseBottomSheet(
     onDismiss: () -> Unit,
     content: @Composable BottomSheetScope.() -> Unit,
 ) {
-    val bottomSheetState = rememberModalBottomSheetState()
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (show) {
         val scope = rememberCoroutineScope()
