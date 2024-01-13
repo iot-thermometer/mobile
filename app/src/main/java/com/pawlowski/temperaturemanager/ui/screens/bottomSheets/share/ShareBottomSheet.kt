@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -108,6 +109,16 @@ private fun ShareBottomSheetContent(
             },
         )
 
+        val amIOwner =
+            remember(state.contentState) {
+                if (state.contentState is ContentState.MembersList) {
+                    state.contentState.membersState.filterIsInstance<AddMemberViewState.AlreadyAdded>()
+                        .firstOrNull { it.member.isMe }?.member?.ownership == OwnershipType.OWNER
+                } else {
+                    false
+                }
+            }
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(space = 8.dp),
         ) {
@@ -117,6 +128,7 @@ private fun ShareBottomSheetContent(
                         Column(verticalArrangement = Arrangement.spacedBy(space = 8.dp)) {
                             MemberItem(
                                 memberState = memberState,
+                                amIOwner = amIOwner,
                                 onInviteClick = {
                                     onEvent(ShareBottomSheetEvent.InviteClick)
                                 },
@@ -145,6 +157,7 @@ private fun ShareBottomSheetContent(
 @Composable
 private fun MemberItem(
     memberState: AddMemberViewState,
+    amIOwner: Boolean,
     onInviteClick: () -> Unit,
     onDeleteClick: (Long) -> Unit,
 ) {
@@ -209,16 +222,25 @@ private fun MemberItem(
             }
 
             is AddMemberViewState.AlreadyAdded -> {
-                if (memberState.member.ownership != OwnershipType.OWNER && !memberState.member.isMe) {
+                if (amIOwner && !memberState.member.isMe) {
                     Button(
                         onClick = { onDeleteClick(memberState.member.userId) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                     ) {
                         Text(text = "Usuń", fontSize = 13.sp)
                     }
+                } else if (memberState.member.isMe) {
+                    Text(text = "Me (${memberState.member.ownership.toOwnershipString()})")
                 } else {
+                    Text(text = memberState.member.ownership.toOwnershipString())
                 }
             }
         }
     }
 }
+
+private fun OwnershipType.toOwnershipString(): String =
+    when (this) {
+        OwnershipType.OWNER -> "Owner"
+        OwnershipType.VIEWER -> "Viewer"
+    }
