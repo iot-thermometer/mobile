@@ -42,6 +42,9 @@ fun ChooseIntervalsBottomSheet(
                 text = "Edytuj częstotliwość odczytów",
                 style = MaterialTheme.typography.titleMedium,
             )
+            val showErrorsIfAny = remember {
+                mutableStateOf(false)
+            }
             val readingIntervalState = remember(initialReadingInterval) {
                 mutableStateOf(initialReadingInterval.toString())
             }
@@ -56,6 +59,7 @@ fun ChooseIntervalsBottomSheet(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
+                isError = showErrorsIfAny.value && readingIntervalState.value.isBlank(),
                 modifier = Modifier.fillMaxWidth(),
             )
             val pushIntervalState = remember(initialPushInterval) {
@@ -72,16 +76,22 @@ fun ChooseIntervalsBottomSheet(
                 onValueChange = {
                     pushIntervalState.value = it
                 },
+                isError = showErrorsIfAny.value && pushIntervalState.value.isBlank(),
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Button(
                 onClick = {
-                    hideBottomSheetWithAction {
-                        onConfirm(
-                            readingIntervalState.value.toLong(),
-                            pushIntervalState.value.toLong(),
-                        )
+                    if(readingIntervalState.value.isNotBlank() && pushIntervalState.value.isNotBlank()) {
+                        hideBottomSheetWithAction {
+                            onConfirm(
+                                readingIntervalState.value.toLong(),
+                                pushIntervalState.value.toLong(),
+                            )
+                        }
+                    }
+                    else {
+                        showErrorsIfAny.value = true
                     }
                 },
                 shape = RectangleShape,
