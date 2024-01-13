@@ -1,57 +1,72 @@
 package com.pawlowski.temperaturemanager.ui.screens.home
 
 import androidx.lifecycle.viewModelScope
-import com.pawlowski.network.ILoginRepository
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.GetDevicesOverviewUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.LogOutUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-internal class HomeViewModel @Inject constructor(
-    private val getDevicesOverviewUseCase: GetDevicesOverviewUseCase,
-    private val deviceSelectionUseCase: DeviceSelectionUseCase,
-    private val loginRepository: ILoginRepository,
-) : BaseMviViewModel<HomeState, HomeEvent, Screen.Home.HomeDirection>(
-    initialState = HomeState(
-        devicesOverviewResource = Resource.Loading,
-    ),
-) {
+internal class HomeViewModel
+    @Inject
+    constructor(
+        private val getDevicesOverviewUseCase: GetDevicesOverviewUseCase,
+        private val deviceSelectionUseCase: DeviceSelectionUseCase,
+        private val logOutUseCase: LogOutUseCase,
+    ) : BaseMviViewModel<HomeState, HomeEvent, Screen.Home.HomeDirection>(
+            initialState =
+                HomeState(
+                    devicesOverviewResource = Resource.Loading,
+                ),
+        ) {
+        override fun initialised() {
+            viewModelScope.launch {
+                resourceFlow {
+                    getDevicesOverviewUseCase()
+                }.collect {
+                    updateState {
+                        copy(devicesOverviewResource = it)
+                    }
+                }
+            }
+        }
 
-    override fun initialised() {
-        viewModelScope.launch {
-            resourceFlow {
-                getDevicesOverviewUseCase()
-            }.collect {
-                updateState {
-                    copy(devicesOverviewResource = it)
+        override fun onNewEvent(event: HomeEvent) {
+            if (actualState.isLoggingOut) {
+                return
+            }
+
+            when (event) {
+                is HomeEvent.AddNewDeviceClick -> {
+                    pushNavigationEvent(Screen.Home.HomeDirection.SEARCH_DEVICES)
+                }
+
+                is HomeEvent.DeviceClick -> {
+                    deviceSelectionUseCase.selectDevice(event.deviceId)
+                    pushNavigationEvent(Screen.Home.HomeDirection.READINGS)
+                }
+
+                HomeEvent.LogOutClick -> {
+                    updateState {
+                        copy(isLoggingOut = true)
+                    }
+                    viewModelScope.launch {
+                        runCatching {
+                            logOutUseCase.invoke()
+                        }.onFailure {
+                            ensureActive()
+                            it.printStackTrace()
+                        }
+                        pushNavigationEvent(Screen.Home.HomeDirection.LOGIN)
+                    }
                 }
             }
         }
     }
-
-    override fun onNewEvent(event: HomeEvent) {
-        when (event) {
-            is HomeEvent.AddNewDeviceClick -> {
-                pushNavigationEvent(Screen.Home.HomeDirection.SEARCH_DEVICES)
-            }
-
-            is HomeEvent.DeviceClick -> {
-                deviceSelectionUseCase.selectDevice(event.deviceId)
-                pushNavigationEvent(Screen.Home.HomeDirection.READINGS)
-            }
-
-            HomeEvent.LogOutClick -> {
-                viewModelScope.launch {
-                    loginRepository.logOut()
-                    pushNavigationEvent(Screen.Home.HomeDirection.LOGIN)
-                }
-            }
-        }
-    }
-}

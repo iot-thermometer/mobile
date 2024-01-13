@@ -1,6 +1,9 @@
 package com.pawlowski.notificationservice
 
-interface INotificationsDataProvider {
+import com.pawlowski.datastore.PushToken
 
-    suspend fun sendMyNewToken()
+interface INotificationsDataProvider {
+    suspend fun addPushToken(pushToken: PushToken)
+
+    suspend fun removePushToken(pushToken: PushToken)
 }

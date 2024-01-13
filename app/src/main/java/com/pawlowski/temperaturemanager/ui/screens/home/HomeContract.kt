@@ -5,6 +5,7 @@ import com.pawlowski.temperaturemanager.domain.models.DeviceWithOverview
 
 data class HomeState(
     val devicesOverviewResource: Resource<List<DeviceWithOverview>>,
+    val isLoggingOut: Boolean = false,
 )
 
 sealed interface HomeEvent {

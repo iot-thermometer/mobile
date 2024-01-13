@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.hilt.android)
     implementation(libs.hilt.workmanager)
+    implementation(project(":libs:network"))
     kapt(libs.hilt.workmanager.compiler)
     implementation(libs.androidx.work.runtime.ktx)
     kapt(libs.hilt.android.compiler)
