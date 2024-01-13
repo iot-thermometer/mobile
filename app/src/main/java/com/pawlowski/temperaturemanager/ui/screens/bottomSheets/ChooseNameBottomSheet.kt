@@ -32,18 +32,24 @@ fun ChooseNameBottomSheet(
         Column(
             verticalArrangement = Arrangement.spacedBy(space = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(bottom = 15.dp)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(bottom = 15.dp)
+                    .padding(horizontal = 16.dp),
         ) {
             Text(
                 text = "Edytuj nazwę urządzenia",
                 style = MaterialTheme.typography.titleMedium,
             )
-            val nameState = remember(initialName) {
-                mutableStateOf(initialName)
-            }
+            val showErrorIfAny =
+                remember {
+                    mutableStateOf(false)
+                }
+            val nameState =
+                remember(initialName) {
+                    mutableStateOf(initialName)
+                }
             TextField(
                 value = nameState.value,
                 label = {
@@ -52,23 +58,30 @@ fun ChooseNameBottomSheet(
                 onValueChange = {
                     nameState.value = it
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                ),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                    ),
+                isError = nameState.value.isBlank() && showErrorIfAny.value,
                 modifier = Modifier.fillMaxWidth(),
             )
 
             Button(
                 onClick = {
-                    hideBottomSheetWithAction {
-                        onConfirm(nameState.value)
+                    if (nameState.value.isNotBlank()) {
+                        hideBottomSheetWithAction {
+                            onConfirm(nameState.value)
+                        }
+                    } else {
+                        showErrorIfAny.value = true
                     }
                 },
                 shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF355CA8),
-                    contentColor = Color.White,
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355CA8),
+                        contentColor = Color.White,
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Edytuj")
@@ -79,10 +92,11 @@ fun ChooseNameBottomSheet(
                     dismissBottomSheet()
                 },
                 shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF15C5C),
-                    contentColor = Color.White,
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF15C5C),
+                        contentColor = Color.White,
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Anuluj")
