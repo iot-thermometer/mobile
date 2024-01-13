@@ -32,4 +32,6 @@ sealed interface ShareBottomSheetEvent {
     object InviteClick : ShareBottomSheetEvent
 
     data class DeleteClick(val userId: Long) : ShareBottomSheetEvent
+
+    object RetryClick : ShareBottomSheetEvent
 }

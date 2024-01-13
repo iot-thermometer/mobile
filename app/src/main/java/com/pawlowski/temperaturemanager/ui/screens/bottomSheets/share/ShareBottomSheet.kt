@@ -121,6 +121,7 @@ private fun ShareBottomSheetContent(
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(space = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             when (state.contentState) {
                 is ContentState.MembersList -> {
@@ -143,7 +144,14 @@ private fun ShareBottomSheetContent(
                     }
                 }
 
-                ContentState.Error -> {}
+                ContentState.Error -> {
+                    item {
+                        Button(onClick = { onEvent(ShareBottomSheetEvent.RetryClick) }) {
+                            Text(text = "Retry")
+                        }
+                    }
+                }
+
                 ContentState.Loading -> {
                     item {
                         CircularProgressIndicator()

@@ -2,7 +2,10 @@ package com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share
 
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
+import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.RetrySharedFlow
 import com.pawlowski.temperaturemanager.domain.models.Member
+import com.pawlowski.temperaturemanager.domain.resourceFlowWithRetrying
 import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.members.AddDeviceMemberUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.members.DeleteDeviceMemberUseCase
@@ -10,7 +13,6 @@ import com.pawlowski.temperaturemanager.domain.useCase.members.GetDeviceMembersU
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheetState.ContentState
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheetState.ContentState.MembersList.AddMemberViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -42,19 +44,31 @@ internal class ShareBottomSheetViewModel
 
         private val currentMembers = MutableStateFlow<List<Member>?>(null)
 
+        private val retrySharedFlow = RetrySharedFlow()
+
         override fun initialised() {
             viewModelScope.launch {
-                runCatching {
+                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                     fetchMembers()
-                }.onFailure {
-                    kotlin.coroutines.coroutineContext.ensureActive()
-                    it.printStackTrace()
-                    updateState {
-                        copy(contentState = ContentState.Error)
-                    }
-                }.onSuccess {
-                    updateState {
-                        copy(contentState = ContentState.MembersList(membersState = emptyList()))
+                }.collect {
+                    when (it) {
+                        is Resource.Success -> {
+                            updateState {
+                                copy(contentState = ContentState.MembersList(membersState = emptyList()))
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            updateState {
+                                copy(contentState = ContentState.Error)
+                            }
+                        }
+
+                        is Resource.Loading -> {
+                            updateState {
+                                copy(contentState = ContentState.Loading)
+                            }
+                        }
                     }
                 }
             }
@@ -62,9 +76,9 @@ internal class ShareBottomSheetViewModel
             combine(
                 searchTextFlow(),
                 currentMembers,
-                isLoadingFlow(),
-            ) { searchText, currentMembers, isLoading ->
-                if (currentMembers == null || isLoading) {
+                isLoadingOrErrorFlow(),
+            ) { searchText, currentMembers, isLoadingOrError ->
+                if (currentMembers == null || isLoadingOrError) {
                     null
                 } else {
                     searchText to currentMembers
@@ -107,9 +121,9 @@ internal class ShareBottomSheetViewModel
                 it.searchText.trim()
             }.distinctUntilChanged()
 
-        private fun isLoadingFlow(): Flow<Boolean> =
+        private fun isLoadingOrErrorFlow(): Flow<Boolean> =
             stateFlow
-                .map { it.contentState is ContentState.Loading }
+                .map { it.contentState is ContentState.Loading || it.contentState is ContentState.Error }
                 .distinctUntilChanged()
 
         override fun onNewEvent(event: ShareBottomSheetEvent) {
@@ -123,39 +137,45 @@ internal class ShareBottomSheetViewModel
                 }
 
                 is ShareBottomSheetEvent.InviteClick -> {
-                    if (actualState.contentState !is ContentState.Loading) {
+                    if (actualState.contentState is ContentState.MembersList) {
                         val email = actualState.searchText
                         updateState {
                             copy(contentState = ContentState.Loading)
                         }
                         viewModelScope.launch {
-                            runCatching {
+                            resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                                 addDeviceMemberUseCase(
                                     deviceId = deviceId,
                                     email = email,
                                 )
                                 fetchMembers()
-                            }.onFailure {
-                                ensureActive()
-                                it.printStackTrace()
+                            }.collect {
+                                when (it) {
+                                    is Resource.Success -> {
+                                        updateState {
+                                            copy(
+                                                searchText = "",
+                                                contentState =
+                                                    ContentState.MembersList(
+                                                        membersState = emptyList(),
+                                                    ),
+                                            )
+                                        }
+                                    }
 
-                                updateState {
-                                    copy(
-                                        contentState =
-                                            ContentState.MembersList(
-                                                membersState = emptyList(),
-                                            ),
-                                    )
-                                }
-                            }.onSuccess {
-                                updateState {
-                                    copy(
-                                        searchText = "",
-                                        contentState =
-                                            ContentState.MembersList(
-                                                membersState = emptyList(),
-                                            ),
-                                    )
+                                    is Resource.Error -> {
+                                        updateState {
+                                            copy(
+                                                contentState = ContentState.Error,
+                                            )
+                                        }
+                                    }
+
+                                    is Resource.Loading -> {
+                                        updateState {
+                                            copy(contentState = ContentState.Loading)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -163,28 +183,50 @@ internal class ShareBottomSheetViewModel
                 }
 
                 is ShareBottomSheetEvent.DeleteClick -> {
-                    if (actualState.contentState !is ContentState.Loading) {
+                    if (actualState.contentState is ContentState.MembersList) {
                         updateState {
                             copy(contentState = ContentState.Loading)
                         }
                         viewModelScope.launch {
-                            runCatching {
+                            resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                                 deleteDeviceMemberUseCase(
                                     deviceId = deviceId,
                                     userId = event.userId,
                                 )
                                 fetchMembers()
-                            }.onFailure {
-                                ensureActive()
-                                it.printStackTrace()
-                                println("Error $it")
-                            }
+                            }.collect {
+                                when (it) {
+                                    is Resource.Success -> {
+                                        updateState {
+                                            copy(
+                                                contentState =
+                                                    ContentState.MembersList(
+                                                        membersState = emptyList(),
+                                                    ),
+                                            )
+                                        }
+                                    }
 
-                            updateState {
-                                copy(contentState = ContentState.MembersList(membersState = emptyList()))
+                                    is Resource.Error ->
+                                        updateState {
+                                            copy(
+                                                contentState = ContentState.Error,
+                                            )
+                                        }
+
+                                    Resource.Loading -> {
+                                        updateState {
+                                            copy(contentState = ContentState.Loading)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
+                }
+
+                ShareBottomSheetEvent.RetryClick -> {
+                    retrySharedFlow.sendRetryEvent()
                 }
             }
         }
