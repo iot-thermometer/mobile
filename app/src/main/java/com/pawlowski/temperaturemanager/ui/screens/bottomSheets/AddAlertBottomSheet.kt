@@ -21,41 +21,63 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AddAlertBottomSheet(
     show: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: (Float?, Float?, Float?, Float?) -> Unit,
+    onConfirm: (String, Float?, Float?, Float?, Float?) -> Unit,
 ) {
     BaseBottomSheet(show = show, onDismiss = onDismiss) {
         Column(
             verticalArrangement = Arrangement.spacedBy(space = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(bottom = 15.dp)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(bottom = 15.dp)
+                    .padding(horizontal = 16.dp),
         ) {
             Text(
                 text = "Dodaj alert",
                 style = MaterialTheme.typography.titleMedium,
             )
-            val minTempState = remember {
-                mutableStateOf("")
-            }
-            val isMinTempEnabledState = remember {
-                mutableStateOf(false)
-            }
-            val maxTempState = remember {
-                mutableStateOf("")
-            }
-            val isMaxTempEnabledState = remember {
-                mutableStateOf(false)
-            }
+
+            val nameState =
+                remember {
+                    mutableStateOf("")
+                }
+            TextField(
+                value = nameState.value,
+                label = {
+                    Text(text = "Nazwa alertu")
+                },
+                onValueChange = nameState::value::set,
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                    ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            val minTempState =
+                remember {
+                    mutableStateOf("")
+                }
+            val isMinTempEnabledState =
+                remember {
+                    mutableStateOf(false)
+                }
+            val maxTempState =
+                remember {
+                    mutableStateOf("")
+                }
+            val isMaxTempEnabledState =
+                remember {
+                    mutableStateOf(false)
+                }
             Row {
                 CheckBoxWithInput(
                     isEnabled = isMinTempEnabledState.value,
@@ -83,18 +105,22 @@ fun AddAlertBottomSheet(
                 )
             }
 
-            val minSoilState = remember {
-                mutableStateOf("")
-            }
-            val isMinSoilEnabledState = remember {
-                mutableStateOf(false)
-            }
-            val maxSoilState = remember {
-                mutableStateOf("")
-            }
-            val isMaxSoilEnabledState = remember {
-                mutableStateOf(false)
-            }
+            val minSoilState =
+                remember {
+                    mutableStateOf("")
+                }
+            val isMinSoilEnabledState =
+                remember {
+                    mutableStateOf(false)
+                }
+            val maxSoilState =
+                remember {
+                    mutableStateOf("")
+                }
+            val isMaxSoilEnabledState =
+                remember {
+                    mutableStateOf(false)
+                }
             Row {
                 CheckBoxWithInput(
                     isEnabled = isMinSoilEnabledState.value,
@@ -127,6 +153,7 @@ fun AddAlertBottomSheet(
                 onClick = {
                     hideBottomSheetWithAction {
                         onConfirm(
+                            nameState.value,
                             minTempState.value.takeIf { isMinTempEnabledState.value }
                                 ?.toFloatOrNull(),
                             maxTempState.value.takeIf { isMaxTempEnabledState.value }
@@ -139,10 +166,11 @@ fun AddAlertBottomSheet(
                     }
                 },
                 shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF355CA8),
-                    contentColor = Color.White,
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF355CA8),
+                        contentColor = Color.White,
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Dodaj")
@@ -153,10 +181,11 @@ fun AddAlertBottomSheet(
                     dismissBottomSheet()
                 },
                 shape = RectangleShape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF15C5C),
-                    contentColor = Color.White,
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF15C5C),
+                        contentColor = Color.White,
+                    ),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = "Anuluj")
@@ -186,22 +215,11 @@ private fun CheckBoxWithInput(
             },
             onValueChange = onValueChange,
             enabled = isEnabled,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-            ),
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
             modifier = Modifier.fillMaxWidth(),
         )
     }
-}
-
-@Preview(
-    showBackground = true,
-)
-@Composable
-private fun AddAlertBottomSheetPreview() {
-    AddAlertBottomSheet(
-        show = true,
-        onDismiss = {},
-        onConfirm = { minTemp, maxTemp, minSoil, maxSoil -> },
-    )
 }

@@ -53,8 +53,9 @@ internal class AlertsViewModel
                 }
 
                 is AlertsEvent.OnAddAlert -> {
-                    if(actualState.isActionInProgress)
+                    if (actualState.isActionInProgress) {
                         return
+                    }
                     updateState {
                         copy(isActionInProgress = true)
                     }
@@ -66,7 +67,7 @@ internal class AlertsViewModel
                                 maxTemp = event.maxTemp,
                                 minSoil = event.minSoil,
                                 maxSoil = event.maxSoil,
-                                name = "Alert2",
+                                name = event.name,
                             )
                         }.onFailure {
                             ensureActive()
@@ -80,8 +81,9 @@ internal class AlertsViewModel
                 }
 
                 is AlertsEvent.DeleteAlert -> {
-                    if(actualState.isActionInProgress)
+                    if (actualState.isActionInProgress) {
                         return
+                    }
                     updateState {
                         copy(isActionInProgress = true)
                     }

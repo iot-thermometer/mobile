@@ -12,6 +12,7 @@ sealed interface AlertsEvent {
     object OnBackClick : AlertsEvent
 
     data class OnAddAlert(
+        val name: String,
         val minTemp: Float?,
         val maxTemp: Float?,
         val minSoil: Float?,

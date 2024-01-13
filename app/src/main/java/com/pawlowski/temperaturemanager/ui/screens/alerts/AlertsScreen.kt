@@ -97,10 +97,11 @@ private fun Content(
         AddAlertBottomSheet(
             show = showAlertBottomSheet.value,
             onDismiss = { showAlertBottomSheet.value = false },
-            onConfirm = { minTemp, maxTemp, minSoil, maxSoil ->
+            onConfirm = { name, minTemp, maxTemp, minSoil, maxSoil ->
                 showAlertBottomSheet.value = false
                 onEvent(
                     AlertsEvent.OnAddAlert(
+                        name = name,
                         minTemp = minTemp,
                         maxTemp = maxTemp,
                         minSoil = minSoil,
@@ -157,12 +158,6 @@ private fun AlertCard(
             alert.temperatureMax?.let {
                 Text(
                     text = "Max temp: ${alert.temperatureMax}°C",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            alert.temperatureMin?.let {
-                Text(
-                    text = "Min temp: ${alert.temperatureMin}°C",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
