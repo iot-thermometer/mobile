@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -45,6 +46,11 @@ fun AddAlertBottomSheet(
                 style = MaterialTheme.typography.titleMedium,
             )
 
+            val showErrorsIfAny =
+                remember {
+                    mutableStateOf(false)
+                }
+
             val nameState =
                 remember {
                     mutableStateOf("")
@@ -60,6 +66,7 @@ fun AddAlertBottomSheet(
                         keyboardType = KeyboardType.Text,
                     ),
                 modifier = Modifier.fillMaxWidth(),
+                isError = nameState.value.isBlank() && showErrorsIfAny.value,
             )
 
             val minTempState =
@@ -78,29 +85,31 @@ fun AddAlertBottomSheet(
                 remember {
                     mutableStateOf(false)
                 }
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 CheckBoxWithInput(
                     isEnabled = isMinTempEnabledState.value,
                     value = minTempState.value,
-                    label = "Min temp",
+                    label = "Min temp (°C)",
                     onEnabledChange = {
                         isMinTempEnabledState.value = it
                     },
                     onValueChange = {
                         minTempState.value = it
                     },
+                    showErrorIfAny = showErrorsIfAny.value,
                     modifier = Modifier.weight(weight = 1f),
                 )
                 CheckBoxWithInput(
                     isEnabled = isMaxTempEnabledState.value,
                     value = maxTempState.value,
-                    label = "Max temp",
+                    label = "Max temp (°C)",
                     onEnabledChange = {
                         isMaxTempEnabledState.value = it
                     },
                     onValueChange = {
                         maxTempState.value = it
                     },
+                    showErrorIfAny = showErrorsIfAny.value,
                     modifier = Modifier.weight(weight = 1f),
                 )
             }
@@ -125,44 +134,56 @@ fun AddAlertBottomSheet(
                 CheckBoxWithInput(
                     isEnabled = isMinSoilEnabledState.value,
                     value = minSoilState.value,
-                    label = "Min soil",
+                    label = "Min soil (%)",
                     onEnabledChange = {
                         isMinSoilEnabledState.value = it
                     },
                     onValueChange = {
                         minSoilState.value = it
                     },
+                    showErrorIfAny = showErrorsIfAny.value,
                     modifier = Modifier.weight(weight = 1f),
                 )
 
                 CheckBoxWithInput(
                     isEnabled = isMaxSoilEnabledState.value,
                     value = maxSoilState.value,
-                    label = "Max soil",
+                    label = "Max soil (%)",
                     onEnabledChange = {
                         isMaxSoilEnabledState.value = it
                     },
                     onValueChange = {
                         maxSoilState.value = it
                     },
+                    showErrorIfAny = showErrorsIfAny.value,
                     modifier = Modifier.weight(weight = 1f),
                 )
             }
 
             Button(
                 onClick = {
-                    hideBottomSheetWithAction {
-                        onConfirm(
-                            nameState.value,
-                            minTempState.value.takeIf { isMinTempEnabledState.value }
-                                ?.toFloatOrNull(),
-                            maxTempState.value.takeIf { isMaxTempEnabledState.value }
-                                ?.toFloatOrNull(),
-                            minSoilState.value.takeIf { isMinSoilEnabledState.value }
-                                ?.toFloatOrNull(),
-                            maxSoilState.value.takeIf { isMaxSoilEnabledState.value }
-                                ?.toFloatOrNull(),
-                        )
+                    val name = nameState.value.trim()
+                    val minTemp = minTempState.value.takeIf { isMinTempEnabledState.value }
+                    val maxTemp = maxTempState.value.takeIf { isMaxTempEnabledState.value }
+                    val minSoil = minSoilState.value.takeIf { isMinSoilEnabledState.value }
+                    val maxSoil = maxSoilState.value.takeIf { isMaxSoilEnabledState.value }
+
+                    if (name.isNotBlank() && (minTemp == null || minTemp.isNotBlank()) &&
+                        (maxTemp == null || maxTemp.isNotBlank()) &&
+                        (minSoil == null || minSoil.isNotBlank()) &&
+                        (maxSoil == null || maxSoil.isNotBlank())
+                    ) {
+                        hideBottomSheetWithAction {
+                            onConfirm(
+                                name,
+                                minTemp?.toFloatOrNull(),
+                                maxTemp?.toFloatOrNull(),
+                                minSoil?.toFloatOrNull(),
+                                maxSoil?.toFloatOrNull(),
+                            )
+                        }
+                    } else {
+                        showErrorsIfAny.value = true
                     }
                 },
                 shape = RectangleShape,
@@ -201,6 +222,7 @@ private fun CheckBoxWithInput(
     label: String,
     onEnabledChange: (Boolean) -> Unit,
     onValueChange: (String) -> Unit,
+    showErrorIfAny: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -211,7 +233,7 @@ private fun CheckBoxWithInput(
         TextField(
             value = value,
             label = {
-                Text(text = label)
+                Text(text = label, textAlign = TextAlign.Center)
             },
             onValueChange = onValueChange,
             enabled = isEnabled,
@@ -219,6 +241,7 @@ private fun CheckBoxWithInput(
                 KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
+            isError = value.isBlank() && showErrorIfAny,
             modifier = Modifier.fillMaxWidth(),
         )
     }
