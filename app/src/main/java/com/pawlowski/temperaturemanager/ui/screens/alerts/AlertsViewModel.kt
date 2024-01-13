@@ -3,8 +3,10 @@ package com.pawlowski.temperaturemanager.ui.screens.alerts
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.getDataOrNull
 import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.domain.useCase.alerts.AddAlertUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.alerts.DeleteAlertUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.alerts.GetAlertsUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Back
@@ -21,6 +23,7 @@ internal class AlertsViewModel
     constructor(
         private val getAlertsUseCase: GetAlertsUseCase,
         private val addAlertUseCase: AddAlertUseCase,
+        private val deleteAlertUseCase: DeleteAlertUseCase,
         deviceSelectionUseCase: DeviceSelectionUseCase,
     ) :
     BaseMviViewModel<AlertsState, AlertsEvent, Screen.Alerts.AlertsDirection>(
@@ -50,6 +53,11 @@ internal class AlertsViewModel
                 }
 
                 is AlertsEvent.OnAddAlert -> {
+                    if(actualState.isActionInProgress)
+                        return
+                    updateState {
+                        copy(isActionInProgress = true)
+                    }
                     viewModelScope.launch {
                         kotlin.runCatching {
                             addAlertUseCase(
@@ -63,7 +71,44 @@ internal class AlertsViewModel
                         }.onFailure {
                             ensureActive()
                             it.printStackTrace()
+                        }
+
+                        updateState {
+                            copy(isActionInProgress = false)
+                        }
+                    }
+                }
+
+                is AlertsEvent.DeleteAlert -> {
+                    if(actualState.isActionInProgress)
+                        return
+                    updateState {
+                        copy(isActionInProgress = true)
+                    }
+                    viewModelScope.launch {
+                        runCatching {
+                            deleteAlertUseCase(alertId = event.alertId)
+                        }.onFailure {
+                            ensureActive()
+                            it.printStackTrace()
                         }.onSuccess {
+                            updateState {
+                                copy(
+                                    alertsResource =
+                                        alertsResource.getDataOrNull()
+                                            ?.let { previousAlerts ->
+                                                Resource.Success(
+                                                    previousAlerts.filter {
+                                                        it.id != event.alertId
+                                                    },
+                                                )
+                                            } ?: alertsResource,
+                                )
+                            }
+                        }
+
+                        updateState {
+                            copy(isActionInProgress = false)
                         }
                     }
                 }

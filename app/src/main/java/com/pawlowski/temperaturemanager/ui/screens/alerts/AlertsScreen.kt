@@ -12,8 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,11 +41,12 @@ internal fun AlertsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Toolbar(
-            leading = Toolbar.ToolbarLeading.Back(
-                onClick = {
-                    onEvent(AlertsEvent.OnBackClick)
-                },
-            ),
+            leading =
+                Toolbar.ToolbarLeading.Back(
+                    onClick = {
+                        onEvent(AlertsEvent.OnBackClick)
+                    },
+                ),
         )
 
         Text(
@@ -51,19 +54,19 @@ internal fun AlertsScreen(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(vertical = 16.dp),
         )
-        when (state.alertsResource) {
-            is Resource.Success -> {
+        when {
+            state.alertsResource is Resource.Success -> {
                 Content(
                     alerts = state.alertsResource.data,
                     onEvent = onEvent,
                 )
             }
 
-            is Resource.Loading -> {
+            state.alertsResource is Resource.Loading || state.isActionInProgress -> {
                 Loader(modifier = Modifier.fillMaxSize())
             }
 
-            is Resource.Error -> {
+            state.alertsResource is Resource.Error -> {
                 Text(text = "Something went wrong")
             }
         }
@@ -81,12 +84,16 @@ private fun Content(
             modifier = Modifier.padding(horizontal = 16.dp),
         ) {
             items(alerts) {
-                AlertCard(alert = it)
+                AlertCard(
+                    alert = it,
+                    onEvent = onEvent,
+                )
             }
         }
-        val showAlertBottomSheet = remember {
-            mutableStateOf(false)
-        }
+        val showAlertBottomSheet =
+            remember {
+                mutableStateOf(false)
+            }
         AddAlertBottomSheet(
             show = showAlertBottomSheet.value,
             onDismiss = { showAlertBottomSheet.value = false },
@@ -107,29 +114,36 @@ private fun Content(
             onClick = {
                 showAlertBottomSheet.value = true
             },
-            modifier = Modifier
-                .padding(all = 20.dp)
-                .align(Alignment.BottomEnd),
+            modifier =
+                Modifier
+                    .padding(all = 20.dp)
+                    .align(Alignment.BottomEnd),
         )
     }
 }
 
 @Composable
-private fun AlertCard(alert: AlertDomain) {
+private fun AlertCard(
+    alert: AlertDomain,
+    onEvent: (AlertsEvent) -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = Color(0xFFD9E2FF),
-                shape = RoundedCornerShape(size = 12.dp),
-            ).padding(all = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color(0xFFD9E2FF),
+                    shape = RoundedCornerShape(size = 12.dp),
+                )
+                .padding(all = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = Icons.Filled.Notifications,
             contentDescription = null,
         )
-        Column {
+        Column(modifier = Modifier.weight(weight = 1f)) {
             Text(
                 text = alert.name,
                 style = MaterialTheme.typography.titleMedium,
@@ -164,6 +178,18 @@ private fun AlertCard(alert: AlertDomain) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
+        }
+
+        IconButton(
+            onClick = {
+                onEvent(AlertsEvent.DeleteAlert(alert.id))
+            },
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                contentDescription = null,
+                tint = Color.Red,
+            )
         }
     }
 }

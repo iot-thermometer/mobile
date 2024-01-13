@@ -10,6 +10,7 @@ import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.thermometer.proto.AddMemberRequest
 import com.thermometer.proto.CreateAlertRequest
 import com.thermometer.proto.CreateDeviceRequest
+import com.thermometer.proto.DeleteAlertRequest
 import com.thermometer.proto.DeleteDeviceRequest
 import com.thermometer.proto.ListAlertsRequest
 import com.thermometer.proto.ListDevicesRequest
@@ -73,6 +74,16 @@ class ThermometerDataProvider
             }.map {
                 it.toDomain()
             }
+
+        suspend fun deleteAlert(alertId: Long) {
+            authorizedUnary(
+                method = ThermometerServiceGrpcKt.ThermometerServiceCoroutineStub::deleteAlert,
+                request =
+                    DeleteAlertRequest.newBuilder()
+                        .setId(alertId)
+                        .build(),
+            )
+        }
 
         suspend fun createAlerts(
             deviceId: Long,

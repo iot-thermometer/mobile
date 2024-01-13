@@ -5,10 +5,10 @@ import com.pawlowski.temperaturemanager.domain.models.AlertDomain
 
 data class AlertsState(
     val alertsResource: Resource<List<AlertDomain>>,
+    val isActionInProgress: Boolean = false,
 )
 
 sealed interface AlertsEvent {
-
     object OnBackClick : AlertsEvent
 
     data class OnAddAlert(
@@ -17,4 +17,6 @@ sealed interface AlertsEvent {
         val minSoil: Float?,
         val maxSoil: Float?,
     ) : AlertsEvent
+
+    data class DeleteAlert(val alertId: Long) : AlertsEvent
 }
