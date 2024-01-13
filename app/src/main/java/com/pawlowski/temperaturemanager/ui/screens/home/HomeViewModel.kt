@@ -4,9 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.resourceFlow
-import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.GetDevicesOverviewUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.LogOutUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.authentication.LogOutUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.devices.GetDevicesOverviewUseCase
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ensureActive

@@ -3,10 +3,10 @@ package com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.models.Member
-import com.pawlowski.temperaturemanager.domain.useCase.AddDeviceMemberUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.DeleteDeviceMemberUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.DeviceSelectionUseCase
-import com.pawlowski.temperaturemanager.domain.useCase.GetDeviceMembersUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.members.AddDeviceMemberUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.members.DeleteDeviceMemberUseCase
+import com.pawlowski.temperaturemanager.domain.useCase.members.GetDeviceMembersUseCase
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheetState.ContentState
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheetState.ContentState.MembersList.AddMemberViewState
 import dagger.hilt.android.lifecycle.HiltViewModel

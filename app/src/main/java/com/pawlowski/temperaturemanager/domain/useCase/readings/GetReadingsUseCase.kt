@@ -1,14 +1,16 @@
-package com.pawlowski.temperaturemanager.domain.useCase
+package com.pawlowski.temperaturemanager.domain.useCase.readings
 
 import com.pawlowski.temperaturemanager.data.ThermometerDataProvider
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import javax.inject.Inject
 
-class GetReadingsUseCase @Inject constructor(
-    private val thermometerDataProvider: ThermometerDataProvider,
-) {
-
-    suspend operator fun invoke(deviceId: Long): List<ReadingDomain> = /*listOf(
+class GetReadingsUseCase
+    @Inject
+    constructor(
+        private val thermometerDataProvider: ThermometerDataProvider,
+    ) {
+        suspend operator fun invoke(deviceId: Long): List<ReadingDomain> =
+        /*listOf(
         ReadingDomain(
             temperature = 30.5f,
             soilMoisture = 19.2f,
@@ -24,6 +26,7 @@ class GetReadingsUseCase @Inject constructor(
             soilMoisture = 19.2f,
             measuredAt = 1703979822000,
         ),
-    )*/thermometerDataProvider
-        .listReadings(deviceId = deviceId)
-}
+    )*/
+            thermometerDataProvider
+                .listReadings(deviceId = deviceId)
+    }

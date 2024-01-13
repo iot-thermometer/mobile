@@ -1,4 +1,4 @@
-package com.pawlowski.temperaturemanager.domain.useCase
+package com.pawlowski.temperaturemanager.domain.useCase.members
 
 import com.pawlowski.temperaturemanager.data.ThermometerDataProvider
 import javax.inject.Inject

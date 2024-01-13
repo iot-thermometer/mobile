@@ -1,4 +1,4 @@
-package com.pawlowski.temperaturemanager.domain.useCase
+package com.pawlowski.temperaturemanager.domain.useCase.authentication
 
 import com.pawlowski.network.ILoginRepository
 import com.pawlowski.notificationservice.synchronization.INotificationTokenSynchronizer
