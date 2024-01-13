@@ -2,7 +2,9 @@ package com.pawlowski.temperaturemanager.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +24,6 @@ import com.pawlowski.temperaturemanager.ui.utils.conditional
 
 interface Toolbar {
     sealed interface ToolbarLeading {
-
         data class Back(
             val onClick: () -> Unit,
             val iconColor: Color = Color.White,
@@ -30,6 +31,12 @@ interface Toolbar {
     }
 
     sealed interface ToolbarTrailing {
+        data class DoubleIcon(
+            val iconId1: Int,
+            val onClick1: () -> Unit,
+            val iconId2: Int,
+            val onClick2: () -> Unit,
+        ) : ToolbarTrailing
 
         data class Icon(
             val iconId: Int,
@@ -46,12 +53,13 @@ fun Toolbar(
     transparentBackground: Boolean = false,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height = 56.dp)
-            .conditional(!transparentBackground) {
-                background(color = Color(0xFF001D4B))
-            },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(height = 56.dp)
+                .conditional(!transparentBackground) {
+                    background(color = Color(0xFF001D4B))
+                },
     ) {
         if (leading != null) {
             Box(modifier = Modifier.align(Alignment.CenterStart)) {
@@ -61,10 +69,11 @@ fun Toolbar(
                             painter = painterResource(id = R.drawable.arrow_back),
                             contentDescription = null,
                             tint = leading.iconColor,
-                            modifier = Modifier
-                                .size(size = 56.dp)
-                                .padding(all = 11.dp)
-                                .clickable { leading.onClick() },
+                            modifier =
+                                Modifier
+                                    .size(size = 56.dp)
+                                    .padding(all = 11.dp)
+                                    .clickable { leading.onClick() },
                         )
                     }
                 }
@@ -87,10 +96,37 @@ fun Toolbar(
                             painter = painterResource(id = trailing.iconId),
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier
-                                .size(size = 56.dp)
-                                .clickable { trailing.onClick() },
+                            modifier =
+                                Modifier
+                                    .size(size = 56.dp)
+                                    .clickable { trailing.onClick() },
                         )
+                    }
+
+                    is Toolbar.ToolbarTrailing.DoubleIcon -> {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = trailing.iconId1),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier =
+                                Modifier
+                                    .size(size = 56.dp)
+                                    .clickable { trailing.onClick1() },
+                            )
+                            Icon(
+                                painter = painterResource(id = trailing.iconId2),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier =
+                                Modifier
+                                    .size(size = 56.dp)
+                                    .clickable { trailing.onClick2() },
+                            )
+                        }
                     }
                 }
             }

@@ -24,6 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
+import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheet
 import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
 import java.util.Date
 
@@ -44,18 +47,33 @@ fun ReadingsScreen(
     onEvent: (ReadingsEvent) -> Unit,
 ) {
     Column {
+        val showShareBottomSheet =
+            remember {
+                mutableStateOf(false)
+            }
+        ShareBottomSheet(
+            show = showShareBottomSheet.value,
+            onDismiss = { showShareBottomSheet.value = false },
+        )
+
         Toolbar(
-            leading = Toolbar.ToolbarLeading.Back(
-                onClick = {
-                    onEvent(ReadingsEvent.BackClick)
-                },
-            ),
-            trailing = Toolbar.ToolbarTrailing.Icon(
-                iconId = R.drawable.settings,
-                onClick = {
-                    onEvent(ReadingsEvent.SettingsClick)
-                },
-            ),
+            leading =
+                Toolbar.ToolbarLeading.Back(
+                    onClick = {
+                        onEvent(ReadingsEvent.BackClick)
+                    },
+                ),
+            trailing =
+                Toolbar.ToolbarTrailing.DoubleIcon(
+                    iconId1 = R.drawable.add_people,
+                    onClick1 = {
+                        showShareBottomSheet.value = true
+                    },
+                    iconId2 = R.drawable.settings,
+                    onClick2 = {
+                        onEvent(ReadingsEvent.SettingsClick)
+                    },
+                ),
         )
 
         when (state) {
@@ -129,17 +147,18 @@ fun ReadingsScreen(
 }
 
 @Composable
-private fun HorizontalDivider() {
+internal fun HorizontalDivider() {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(2.dp)
-            .background(color = Color(0xFF001944))
-            .shadow(
-                elevation = 4.dp,
-                spotColor = Color(0x40000000),
-                ambientColor = Color(0x40000000),
-            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(color = Color(0xFF001944))
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x40000000),
+                    ambientColor = Color(0x40000000),
+                ),
     )
 }
 
@@ -156,11 +175,12 @@ private fun ReadingCircle(
         verticalArrangement = Arrangement.spacedBy(space = 4.dp),
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth().aspectRatio(ratio = 1f).border(
-                width = 5.dp,
-                shape = CircleShape,
-                color = contentColor,
-            ),
+            modifier =
+                Modifier.fillMaxWidth().aspectRatio(ratio = 1f).border(
+                    width = 5.dp,
+                    shape = CircleShape,
+                    color = contentColor,
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Column(modifier = Modifier.padding(all = 10.dp)) {
@@ -199,15 +219,16 @@ private fun ReadingsSection(
         Text(text = day)
         readings.forEach {
             Row(
-                modifier = Modifier
-                    .shadow(
-                        elevation = 4.dp,
-                        spotColor = Color(0x40000000),
-                        ambientColor = Color(0x40000000),
-                    )
-                    .fillMaxWidth()
-                    .background(color = Color(0xFFD9E2FF), shape = RoundedCornerShape(size = 4.dp))
-                    .padding(horizontal = 5.dp, vertical = 10.dp),
+                modifier =
+                    Modifier
+                        .shadow(
+                            elevation = 4.dp,
+                            spotColor = Color(0x40000000),
+                            ambientColor = Color(0x40000000),
+                        )
+                        .fillMaxWidth()
+                        .background(color = Color(0xFFD9E2FF), shape = RoundedCornerShape(size = 4.dp))
+                        .padding(horizontal = 5.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -243,9 +264,10 @@ private fun ReadingsCard(
     color: Color,
 ) {
     Column(
-        modifier = Modifier
-            .background(color = color, shape = RoundedCornerShape(size = 4.dp))
-            .padding(horizontal = 8.dp, vertical = 2.dp),
+        modifier =
+            Modifier
+                .background(color = color, shape = RoundedCornerShape(size = 4.dp))
+                .padding(horizontal = 8.dp, vertical = 2.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
