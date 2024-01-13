@@ -3,8 +3,9 @@ package com.pawlowski.temperaturemanager.ui.screens.deviceSettings
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.RetrySharedFlow
 import com.pawlowski.temperaturemanager.domain.getDataOrNull
-import com.pawlowski.temperaturemanager.domain.resourceFlow
+import com.pawlowski.temperaturemanager.domain.resourceFlowWithRetrying
 import com.pawlowski.temperaturemanager.domain.useCase.devices.DeleteDeviceUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.devices.GetDeviceByIdUseCase
@@ -12,7 +13,6 @@ import com.pawlowski.temperaturemanager.domain.useCase.devices.UpdateDeviceUseCa
 import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.DeviceSettings.DeviceSettingsDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,10 +31,11 @@ internal class DeviceSettingsViewModel
                 ),
         ) {
         private val deviceId = deviceSelectionUseCase.getSelectedDeviceId()!!
+        private val retrySharedFlow = RetrySharedFlow()
 
         override fun initialised() {
             viewModelScope.launch {
-                resourceFlow {
+                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                     getDeviceByIdUseCase(deviceId)
                 }.collect { deviceResource ->
                     updateState {
@@ -58,16 +59,32 @@ internal class DeviceSettingsViewModel
                             copy(isLoading = true)
                         }
                         viewModelScope.launch {
-                            kotlin.runCatching {
+                            resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                                 deleteDeviceUseCase(deviceId = deviceId)
-                            }.onFailure {
-                                ensureActive()
-                                it.printStackTrace()
-                            }.onSuccess {
-                                pushNavigationEvent(DeviceSettingsDirection.HOME)
-                            }
-                            updateState {
-                                copy(isLoading = false)
+                            }.collect {
+                                when (it) {
+                                    is Resource.Success -> {
+                                        pushNavigationEvent(DeviceSettingsDirection.HOME)
+                                    }
+
+                                    is Resource.Loading -> {
+                                        updateState {
+                                            copy(
+                                                isLoading = true,
+                                                isActionError = false,
+                                            )
+                                        }
+                                    }
+
+                                    is Resource.Error -> {
+                                        updateState {
+                                            copy(
+                                                isLoading = false,
+                                                isActionError = true,
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -80,36 +97,48 @@ internal class DeviceSettingsViewModel
                         }
                         viewModelScope.launch {
                             actualState.deviceResource.getDataOrNull()?.let { currentDevice ->
-                                runCatching {
+                                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                                     updateDeviceUseCase(
                                         deviceId = deviceId,
                                         readingInterval = event.readingInterval,
                                         pushInterval = event.pushInterval,
                                         name = currentDevice.name,
                                     )
-                                }.onFailure {
-                                    ensureActive()
-                                    it.printStackTrace()
-                                }.onSuccess {
-                                    updateState {
-                                        copy(
-                                            deviceResource =
-                                                deviceResource.getDataOrNull()
-                                                    ?.let { device ->
-                                                        Resource.Success(
-                                                            data =
-                                                                device.copy(
-                                                                    readingInterval = event.readingInterval,
-                                                                    pushInterval = event.pushInterval,
-                                                                ),
-                                                        )
-                                                    } ?: deviceResource,
-                                        )
+                                }.collect {
+                                    when (it) {
+                                        is Resource.Success -> {
+                                            updateState {
+                                                copy(
+                                                    deviceResource =
+                                                        deviceResource.getDataOrNull()
+                                                            ?.let { device ->
+                                                                Resource.Success(
+                                                                    data =
+                                                                        device.copy(
+                                                                            readingInterval = event.readingInterval,
+                                                                            pushInterval = event.pushInterval,
+                                                                        ),
+                                                                )
+                                                            } ?: deviceResource,
+                                                    isLoading = false,
+                                                    isActionError = false,
+                                                )
+                                            }
+                                        }
+
+                                        is Resource.Error -> {
+                                            updateState {
+                                                copy(isLoading = false, isActionError = true)
+                                            }
+                                        }
+
+                                        is Resource.Loading -> {
+                                            updateState {
+                                                copy(isLoading = true, isActionError = false)
+                                            }
+                                        }
                                     }
                                 }
-                            }
-                            updateState {
-                                copy(isLoading = false)
                             }
                         }
                     }
@@ -122,34 +151,45 @@ internal class DeviceSettingsViewModel
                         }
                         viewModelScope.launch {
                             actualState.deviceResource.getDataOrNull()?.let { currentDevice ->
-                                runCatching {
+                                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                                     updateDeviceUseCase(
                                         deviceId = deviceId,
                                         name = event.name,
                                         pushInterval = currentDevice.pushInterval,
                                         readingInterval = currentDevice.readingInterval,
                                     )
-                                }.onFailure {
-                                    ensureActive()
-                                    it.printStackTrace()
-                                }.onSuccess {
-                                    updateState {
-                                        copy(
-                                            deviceResource =
-                                                deviceResource.getDataOrNull()
-                                                    ?.let { device ->
-                                                        Resource.Success(
-                                                            data = device.copy(name = event.name),
-                                                        )
-                                                    } ?: deviceResource,
-                                        )
-                                    }
-                                    pushNavigationEvent(DeviceSettingsDirection.HOME)
-                                }
-                            }
+                                }.collect {
+                                    when (it) {
+                                        is Resource.Success -> {
+                                            updateState {
+                                                copy(
+                                                    deviceResource =
+                                                        deviceResource.getDataOrNull()
+                                                            ?.let { device ->
+                                                                Resource.Success(
+                                                                    data = device.copy(name = event.name),
+                                                                )
+                                                            } ?: deviceResource,
+                                                    isActionError = false,
+                                                    isLoading = false,
+                                                )
+                                            }
+                                            pushNavigationEvent(DeviceSettingsDirection.HOME)
+                                        }
 
-                            updateState {
-                                copy(isLoading = false)
+                                        is Resource.Loading -> {
+                                            updateState {
+                                                copy(isLoading = true, isActionError = false)
+                                            }
+                                        }
+
+                                        is Resource.Error -> {
+                                            updateState {
+                                                copy(isActionError = true, isLoading = false)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -157,6 +197,10 @@ internal class DeviceSettingsViewModel
 
                 DeviceSettingsEvent.AlertsClick -> {
                     pushNavigationEvent(DeviceSettingsDirection.ALERTS)
+                }
+
+                DeviceSettingsEvent.RetryClick -> {
+                    retrySharedFlow.sendRetryEvent()
                 }
             }
         }

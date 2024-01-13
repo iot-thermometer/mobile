@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.Resource
 import com.pawlowski.temperaturemanager.domain.models.DeviceDomain
+import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.ChooseIntervalsBottomSheet
@@ -39,25 +40,35 @@ fun DeviceSettingsScreen(
     onEvent: (DeviceSettingsEvent) -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
-            .background(color = Color(0xFF9ECBFF)),
+        modifier =
+            Modifier.fillMaxSize()
+                .background(color = Color(0xFF9ECBFF)),
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(space = 16.dp),
         ) {
             Toolbar(
                 transparentBackground = true,
-                leading = Toolbar.ToolbarLeading.Back(
-                    iconColor = Color.Black,
-                    onClick = {
-                        onEvent(DeviceSettingsEvent.BackClick)
-                    },
-                ),
+                leading =
+                    Toolbar.ToolbarLeading.Back(
+                        iconColor = Color.Black,
+                        onClick = {
+                            onEvent(DeviceSettingsEvent.BackClick)
+                        },
+                    ),
                 toolbarText = "Device settings",
             )
 
-            when (state.deviceResource) {
-                is Resource.Success -> {
+            when {
+                state.deviceResource is Resource.Error || state.isActionError -> {
+                    ErrorItem(
+                        onRetry = {
+                            onEvent(DeviceSettingsEvent.RetryClick)
+                        },
+                    )
+                }
+
+                state.deviceResource is Resource.Success -> {
                     Content(
                         device = state.deviceResource.data,
                         isLoading = state.isLoading,
@@ -65,12 +76,8 @@ fun DeviceSettingsScreen(
                     )
                 }
 
-                is Resource.Loading -> {
+                state.deviceResource is Resource.Loading -> {
                     Loader(modifier = Modifier.fillMaxSize())
-                }
-
-                is Resource.Error -> {
-                    Text(text = "Something went wrong")
                 }
             }
         }
@@ -83,9 +90,10 @@ private fun Content(
     isLoading: Boolean,
     onEvent: (DeviceSettingsEvent) -> Unit,
 ) {
-    val showIntervalsBottomSheet = remember {
-        mutableStateOf(false)
-    }
+    val showIntervalsBottomSheet =
+        remember {
+            mutableStateOf(false)
+        }
     ChooseIntervalsBottomSheet(
         initialReadingInterval = device.readingInterval,
         initialPushInterval = device.pushInterval,
@@ -104,9 +112,10 @@ private fun Content(
         },
     )
 
-    val showNameBottomSheet = remember {
-        mutableStateOf(false)
-    }
+    val showNameBottomSheet =
+        remember {
+            mutableStateOf(false)
+        }
     ChooseNameBottomSheet(
         initialName = device.name,
         show = showNameBottomSheet.value,
@@ -162,12 +171,13 @@ private fun DeviceInfo(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier
-                .size(size = 62.dp)
-                .background(
-                    color = Color(0xFF355CA8),
-                    shape = CircleShape,
-                ).padding(all = 10.dp),
+            modifier =
+                Modifier
+                    .size(size = 62.dp)
+                    .background(
+                        color = Color(0xFF355CA8),
+                        shape = CircleShape,
+                    ).padding(all = 10.dp),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.device),
@@ -208,58 +218,62 @@ private fun SettingsCard(
     onAlertsClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = Color(0xFFF8F7F7),
-                shape = RoundedCornerShape(
-                    topStart = 40.dp,
-                    topEnd = 40.dp,
-                ),
-            ).padding(top = 20.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    color = Color(0xFFF8F7F7),
+                    shape =
+                        RoundedCornerShape(
+                            topStart = 40.dp,
+                            topEnd = 40.dp,
+                        ),
+                ).padding(top = 20.dp),
     ) {
         SettingsSection(
-            items = listOf(
-                SettingsItem(
-                    iconId = R.drawable.signal_icon,
-                    iconBackgroundColor = Color(0xFFF18A5C),
-                    title = "Częstotliwość odczytów",
-                    subtitle = "Ustaw częstotliwość odczytów",
-                    onClick = {
-                        onChangeIntervalsClick()
-                    },
+            items =
+                listOf(
+                    SettingsItem(
+                        iconId = R.drawable.signal_icon,
+                        iconBackgroundColor = Color(0xFFF18A5C),
+                        title = "Częstotliwość odczytów",
+                        subtitle = "Ustaw częstotliwość odczytów",
+                        onClick = {
+                            onChangeIntervalsClick()
+                        },
+                    ),
+                    SettingsItem(
+                        iconId = R.drawable.device,
+                        iconBackgroundColor = Color(0xFF5CF198),
+                        title = "Nazwa urządzenia",
+                        subtitle = "Zmień nazwę urządzenia",
+                        onClick = {
+                            onNameChangeClick()
+                        },
+                    ),
+                    SettingsItem(
+                        iconId = R.drawable.notification,
+                        iconBackgroundColor = Color(0xFFFF00C4),
+                        title = "Alerty",
+                        subtitle = "Dostawaj alerty o pomiarach",
+                        onClick = {
+                            onAlertsClick()
+                        },
+                    ),
                 ),
-                SettingsItem(
-                    iconId = R.drawable.device,
-                    iconBackgroundColor = Color(0xFF5CF198),
-                    title = "Nazwa urządzenia",
-                    subtitle = "Zmień nazwę urządzenia",
-                    onClick = {
-                        onNameChangeClick()
-                    },
-                ),
-                SettingsItem(
-                    iconId = R.drawable.notification,
-                    iconBackgroundColor = Color(0xFFFF00C4),
-                    title = "Alerty",
-                    subtitle = "Dostawaj alerty o pomiarach",
-                    onClick = {
-                        onAlertsClick()
-                    },
-                ),
-            ),
         )
 
         SettingsSection(
-            items = listOf(
-                SettingsItem(
-                    iconId = R.drawable.delete,
-                    iconBackgroundColor = Color(0xFFF15C5C),
-                    title = "Usuń urządzenie",
-                    subtitle = "Usuń urządzenie wraz z pomiarami",
-                    onClick = onDeleteDeviceClick,
+            items =
+                listOf(
+                    SettingsItem(
+                        iconId = R.drawable.delete,
+                        iconBackgroundColor = Color(0xFFF15C5C),
+                        title = "Usuń urządzenie",
+                        subtitle = "Usuń urządzenie wraz z pomiarami",
+                        onClick = onDeleteDeviceClick,
+                    ),
                 ),
-            ),
         )
 
         if (isLoading) {
