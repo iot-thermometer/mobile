@@ -49,6 +49,7 @@ internal fun AlertsScreen(
         Text(
             text = "Powiadomienia dla urządzenia:",
             style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(vertical = 16.dp),
         )
         when (state.alertsResource) {
             is Resource.Success -> {
@@ -75,7 +76,10 @@ private fun Content(
     onEvent: (AlertsEvent) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        ) {
             items(alerts) {
                 AlertCard(alert = it)
             }

@@ -10,15 +10,16 @@ import com.thermometer.proto.DeviceOuterClass.Device
 import com.thermometer.proto.Ownership
 import com.thermometer.proto.OwnershipRole
 import com.thermometer.proto.ReadingOuterClass.Reading
+import kotlin.math.absoluteValue
 
 fun Alert.toDomain(): AlertDomain =
     AlertDomain(
         id = id,
         name = name,
-        soilMoistureMin = soilMoistureMin,
-        soilMoistureMax = soilMoistureMax,
-        temperatureMin = temperatureMin,
-        temperatureMax = temperatureMax,
+        soilMoistureMin = soilMoistureMin.takeIf { it.toLong() != -1000L },
+        soilMoistureMax = soilMoistureMax.takeIf { it.toLong() != 1000L },
+        temperatureMin = temperatureMin.takeIf { it.toLong() != -1000L },
+        temperatureMax = temperatureMax.takeIf { it.toLong().absoluteValue != 1000L },
     )
 
 fun Device.toDomain(): DeviceDomain =
