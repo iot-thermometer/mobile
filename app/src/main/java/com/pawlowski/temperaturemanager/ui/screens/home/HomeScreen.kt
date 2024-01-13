@@ -41,12 +41,13 @@ fun HomeScreen(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(space = 8.dp)) {
         Toolbar(
-            trailing = Toolbar.ToolbarTrailing.Icon(
-                iconId = R.drawable.log_out,
-                onClick = {
-                    onEvent(HomeEvent.LogOutClick)
-                },
-            ),
+            trailing =
+                Toolbar.ToolbarTrailing.Icon(
+                    iconId = R.drawable.log_out,
+                    onClick = {
+                        onEvent(HomeEvent.LogOutClick)
+                    },
+                ),
         )
         Box(modifier = Modifier.fillMaxSize()) {
             when (state.devicesOverviewResource) {
@@ -61,10 +62,11 @@ fun HomeScreen(
                             DeviceParameters(
                                 deviceName = it.device.name,
                                 temperature = it.currentTemperature,
-                                density = it.currentSoilMoisture,
-                                modifier = Modifier.clickable {
-                                    onEvent(HomeEvent.DeviceClick(it.device.id))
-                                },
+                                soilMosture = it.currentSoilMoisture,
+                                modifier =
+                                    Modifier.clickable {
+                                        onEvent(HomeEvent.DeviceClick(it.device.id))
+                                    },
                             )
                         }
                     }
@@ -83,9 +85,10 @@ fun HomeScreen(
                 onClick = {
                     onEvent(HomeEvent.AddNewDeviceClick)
                 },
-                modifier = Modifier
-                    .padding(all = 20.dp)
-                    .align(Alignment.BottomEnd),
+                modifier =
+                    Modifier
+                        .padding(all = 20.dp)
+                        .align(Alignment.BottomEnd),
             )
         }
     }
@@ -94,16 +97,17 @@ fun HomeScreen(
 @Composable
 private fun DeviceParameters(
     deviceName: String,
-    temperature: Int,
-    density: Int,
+    temperature: Int?,
+    soilMosture: Int?,
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth()
-            .height(60.dp)
-            .clip(shape = RoundedCornerShape(size = 5.dp))
-            .background(color = Color(0xFFD9E2FF))
-            .padding(all = 10.dp),
+        modifier =
+            modifier.fillMaxWidth()
+                .height(60.dp)
+                .clip(shape = RoundedCornerShape(size = 5.dp))
+                .background(color = Color(0xFFD9E2FF))
+                .padding(all = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Icon(
@@ -113,50 +117,59 @@ private fun DeviceParameters(
             modifier = Modifier.size(size = 50.dp),
         )
         Column(
-            modifier = Modifier.height(height = 50.dp).weight(1f)
-                .clip(shape = RoundedCornerShape(size = 5.dp))
-                .background(color = Color(0xFF3F4759)),
+            modifier =
+                Modifier.height(height = 50.dp).weight(1f)
+                    .clip(shape = RoundedCornerShape(size = 5.dp))
+                    .background(color = Color(0xFF3F4759)),
         ) {
             Text(
                 deviceName,
                 textAlign = TextAlign.Center,
                 color = Color.White,
-                modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 13.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 10.dp, vertical = 13.dp)
+                        .fillMaxWidth(),
                 fontSize = 10.sp,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
         }
         Column(
-            modifier = Modifier.height(height = 50.dp).width(width = 60.dp)
-                .clip(shape = RoundedCornerShape(size = 5.dp))
-                .background(color = Color(0xFF355CA8)),
+            modifier =
+                Modifier.height(height = 50.dp).width(width = 60.dp)
+                    .clip(shape = RoundedCornerShape(size = 5.dp))
+                    .background(color = Color(0xFF355CA8)),
         ) {
-            val temp = temperature.toString()
             Text(
-                "$temp°C",
+                temperature?.let {
+                    "$it°C"
+                } ?: "-",
                 textAlign = TextAlign.Center,
                 color = Color.White,
-                modifier = Modifier
-                    .padding(horizontal = 5.dp, vertical = 10.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 5.dp, vertical = 10.dp)
+                        .fillMaxWidth(),
                 fontSize = 15.sp,
             )
         }
         Column(
-            modifier = Modifier.height(height = 50.dp).width(width = 60.dp)
-                .clip(shape = RoundedCornerShape(size = 5.dp))
-                .background(color = Color(color = 0xFF355CA8)),
+            modifier =
+                Modifier.height(height = 50.dp).width(width = 60.dp)
+                    .clip(shape = RoundedCornerShape(size = 5.dp))
+                    .background(color = Color(color = 0xFF355CA8)),
         ) {
             Text(
-                "$density%",
+                soilMosture?.let {
+                    "$soilMosture%"
+                } ?: "-",
                 textAlign = TextAlign.Center,
                 color = Color.White,
-                modifier = Modifier
-                    .padding(horizontal = 5.dp)
-                    .fillMaxWidth().absolutePadding(top = 10.dp),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 5.dp)
+                        .fillMaxWidth().absolutePadding(top = 10.dp),
                 fontSize = 15.sp,
             )
             Text(
@@ -164,9 +177,10 @@ private fun DeviceParameters(
                 textAlign = TextAlign.Center,
                 color = Color.White,
                 fontSize = 6.sp,
-                modifier = Modifier
-                    .padding(horizontal = 5.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 5.dp)
+                        .fillMaxWidth(),
             )
         }
     }
