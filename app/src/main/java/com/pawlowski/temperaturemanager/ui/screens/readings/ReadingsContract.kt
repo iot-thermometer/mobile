@@ -3,7 +3,6 @@ package com.pawlowski.temperaturemanager.ui.screens.readings
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 
 sealed interface ReadingsState {
-
     object Loading : ReadingsState
 
     object Empty : ReadingsState
@@ -18,8 +17,9 @@ sealed interface ReadingsState {
 }
 
 sealed interface ReadingsEvent {
-
     object BackClick : ReadingsEvent
 
     object SettingsClick : ReadingsEvent
+
+    object RetryClick : ReadingsEvent
 }

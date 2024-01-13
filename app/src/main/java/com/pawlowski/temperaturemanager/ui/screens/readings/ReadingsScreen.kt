@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
+import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheet
 import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
@@ -135,12 +136,11 @@ fun ReadingsScreen(
             }
 
             ReadingsState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(text = "Something went wrong!")
-                }
+                ErrorItem(
+                    onRetry = {
+                        onEvent(ReadingsEvent.RetryClick)
+                    },
+                )
             }
         }
     }
