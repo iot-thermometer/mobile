@@ -64,7 +64,7 @@ fun ChooseIntervalsBottomSheet(
             TextField(
                 value = pushIntervalState.value,
                 label = {
-                    Text(text = "Częstotliwość wysyłania (sekundy)")
+                    Text(text = "Częstotliwość wysyłania (co ile pomiarów)")
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
