@@ -65,7 +65,6 @@ internal class NotificationTokenSynchronizer
 
         private suspend fun isThisTokenSynchronizedWithServer(token: String): Boolean {
             val currentValue = pushTokenRepository.getPushToken()
-            println("MOJ TAG IsSynchronized: ${currentValue.token == token} $token $currentValue")
             return currentValue.token == token
         }
     }
