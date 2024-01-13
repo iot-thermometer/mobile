@@ -4,9 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.pawlowski.network.ILoginRepository
 import com.pawlowski.notificationservice.IRunPushTokenSynchronizationUseCase
 import com.pawlowski.temperaturemanager.BaseMviViewModel
+import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.domain.resourceFlow
 import com.pawlowski.temperaturemanager.ui.navigation.Screen.Login.LoginDirection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,40 +45,58 @@ internal class LoginViewModel
         }
 
         private fun loginClicked() {
-            viewModelScope.launch {
-                runCatching {
-                    actualState.let { state ->
-                        if (state.email.isNotBlank() && state.password.isNotBlank()) {
+            if (actualState.requestResource == Resource.Loading) {
+                return
+            }
+            actualState.let { state ->
+                if (state.email.isNotBlank() && state.password.isNotBlank()) {
+                    viewModelScope.launch {
+                        resourceFlow {
                             loginRepository.login(
-                                email = state.email,
+                                email = state.email.trim(),
                                 password = state.password,
                             )
+                        }.collect {
+                            if (it is Resource.Success) {
+                                actionsOnGoHome()
+                            }
+                            updateState {
+                                copy(requestResource = it)
+                            }
                         }
                     }
-                }.onFailure {
-                    ensureActive()
-                    it.printStackTrace()
-                }.onSuccess {
-                    actionsOnGoHome()
+                } else {
+                    updateState {
+                        copy(showErrorsIfAny = true)
+                    }
                 }
             }
         }
 
         private fun registerClicked() {
+            if (actualState.requestResource == Resource.Loading) {
+                return
+            }
             viewModelScope.launch {
                 actualState.let { state ->
-                    kotlin.runCatching {
-                        if (state.email.isNotBlank() && state.password.isNotBlank()) {
+                    if (state.email.isNotBlank() && state.password.isNotBlank()) {
+                        resourceFlow {
                             loginRepository.register(
                                 email = state.email,
                                 password = state.password,
                             )
+                        }.collect {
+                            if (it is Resource.Success) {
+                                actionsOnGoHome()
+                            }
+                            updateState {
+                                copy(requestResource = it)
+                            }
                         }
-                    }.onFailure {
-                        ensureActive()
-                        it.printStackTrace()
-                    }.onSuccess {
-                        actionsOnGoHome()
+                    } else {
+                        updateState {
+                            copy(showErrorsIfAny = true)
+                        }
                     }
                 }
             }

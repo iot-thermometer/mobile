@@ -9,6 +9,9 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.PasswordTextField
 
 @Composable
@@ -30,6 +33,7 @@ fun LoginScreen(
             label = {
                 Text(text = "E-mail")
             },
+            isError = state.email.isBlank() && state.showErrorsIfAny,
         )
 
         PasswordTextField(
@@ -38,6 +42,7 @@ fun LoginScreen(
                 onEvent(LoginEvent.PasswordChange(it))
             },
             label = "Hasło",
+            showErrorsIfAny = state.showErrorsIfAny,
         )
 
         Button(onClick = { onEvent(LoginEvent.LoginClick) }) {
@@ -45,6 +50,21 @@ fun LoginScreen(
         }
         Button(onClick = { onEvent(LoginEvent.RegisterClick) }) {
             Text(text = "Register")
+        }
+
+        when (state.requestResource) {
+            null -> {
+            }
+
+            Resource.Loading -> {
+                Loader(modifier = Modifier.fillMaxSize())
+            }
+
+            is Resource.Error -> {
+                Text(text = "Something went wrong", color = Color.Red)
+            }
+
+            else -> {}
         }
     }
 }

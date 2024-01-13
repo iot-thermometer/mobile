@@ -28,6 +28,7 @@ internal fun PasswordTextField(
     label: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    showErrorsIfAny: Boolean = false,
     colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
 ) {
     var showPassword by remember { mutableStateOf(value = false) }
@@ -59,5 +60,6 @@ internal fun PasswordTextField(
                 )
             }
         },
+        isError = showErrorsIfAny && text.isBlank(),
     )
 }
