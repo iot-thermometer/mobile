@@ -14,4 +14,6 @@ sealed interface HomeEvent {
     data class DeviceClick(val deviceId: Long) : HomeEvent
 
     object LogOutClick : HomeEvent
+
+    object RetryClick : HomeEvent
 }

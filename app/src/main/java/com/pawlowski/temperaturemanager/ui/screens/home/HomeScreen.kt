@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pawlowski.temperaturemanager.R
 import com.pawlowski.temperaturemanager.domain.Resource
+import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.Loader
 import com.pawlowski.temperaturemanager.ui.components.PlusButton
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
@@ -77,7 +78,11 @@ fun HomeScreen(
                 }
 
                 is Resource.Error -> {
-                    Text(text = "Error")
+                    ErrorItem(
+                        onRetry = {
+                            onEvent(HomeEvent.RetryClick)
+                        },
+                    )
                 }
             }
 

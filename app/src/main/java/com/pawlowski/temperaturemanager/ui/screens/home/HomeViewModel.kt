@@ -3,7 +3,8 @@ package com.pawlowski.temperaturemanager.ui.screens.home
 import androidx.lifecycle.viewModelScope
 import com.pawlowski.temperaturemanager.BaseMviViewModel
 import com.pawlowski.temperaturemanager.domain.Resource
-import com.pawlowski.temperaturemanager.domain.resourceFlow
+import com.pawlowski.temperaturemanager.domain.RetrySharedFlow
+import com.pawlowski.temperaturemanager.domain.resourceFlowWithRetrying
 import com.pawlowski.temperaturemanager.domain.useCase.authentication.LogOutUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUseCase
 import com.pawlowski.temperaturemanager.domain.useCase.devices.GetDevicesOverviewUseCase
@@ -26,9 +27,11 @@ internal class HomeViewModel
                     devicesOverviewResource = Resource.Loading,
                 ),
         ) {
+        private val retrySharedFlow = RetrySharedFlow()
+
         override fun initialised() {
             viewModelScope.launch {
-                resourceFlow {
+                resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                     getDevicesOverviewUseCase()
                 }.collect {
                     updateState {
@@ -66,6 +69,10 @@ internal class HomeViewModel
                         }
                         pushNavigationEvent(Screen.Home.HomeDirection.LOGIN)
                     }
+                }
+
+                HomeEvent.RetryClick -> {
+                    retrySharedFlow.sendRetryEvent()
                 }
             }
         }
