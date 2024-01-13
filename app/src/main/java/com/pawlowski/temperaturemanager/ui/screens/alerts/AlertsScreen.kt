@@ -56,22 +56,22 @@ internal fun AlertsScreen(
             modifier = Modifier.padding(vertical = 16.dp),
         )
         when {
-            state.alertsResource is Resource.Success -> {
-                Content(
-                    alerts = state.alertsResource.data,
-                    onEvent = onEvent,
-                )
-            }
-
-            state.alertsResource is Resource.Loading || state.isActionInProgress -> {
+            state.alertsResource is Resource.Loading || state.actionResource is Resource.Loading -> {
                 Loader(modifier = Modifier.fillMaxSize())
             }
 
-            state.alertsResource is Resource.Error -> {
+            state.alertsResource is Resource.Error || state.actionResource is Resource.Error -> {
                 ErrorItem(
                     onRetry = {
                               onEvent(AlertsEvent.RetryClick)
                     },
+                )
+            }
+
+            state.alertsResource is Resource.Success -> {
+                Content(
+                    alerts = state.alertsResource.data,
+                    onEvent = onEvent,
                 )
             }
         }

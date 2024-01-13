@@ -13,7 +13,6 @@ import com.pawlowski.temperaturemanager.domain.useCase.devices.DeviceSelectionUs
 import com.pawlowski.temperaturemanager.ui.navigation.Back
 import com.pawlowski.temperaturemanager.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -55,14 +54,12 @@ internal class AlertsViewModel
                 }
 
                 is AlertsEvent.OnAddAlert -> {
-                    if (actualState.isActionInProgress) {
+                    if (actualState.actionResource != null) {
                         return
                     }
-                    updateState {
-                        copy(isActionInProgress = true)
-                    }
+
                     viewModelScope.launch {
-                        kotlin.runCatching {
+                        resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                             addAlertUseCase(
                                 deviceId = deviceId,
                                 minTemp = event.minTemp,
@@ -77,48 +74,48 @@ internal class AlertsViewModel
                                     copy(alertsResource = Resource.Success(it))
                                 }
                             }
-                        }.onFailure {
-                            ensureActive()
-                            it.printStackTrace()
-                        }
-
-                        updateState {
-                            copy(isActionInProgress = false)
+                            Unit
+                        }.collect {
+                            updateState {
+                                copy(
+                                    actionResource =
+                                        if (it is Resource.Success) {
+                                            null
+                                        } else {
+                                            it
+                                        },
+                                )
+                            }
                         }
                     }
                 }
 
                 is AlertsEvent.DeleteAlert -> {
-                    if (actualState.isActionInProgress) {
+                    if (actualState.actionResource != null) {
                         return
                     }
-                    updateState {
-                        copy(isActionInProgress = true)
-                    }
                     viewModelScope.launch {
-                        runCatching {
+                        resourceFlowWithRetrying(retrySharedFlow = retrySharedFlow) {
                             deleteAlertUseCase(alertId = event.alertId)
-                        }.onFailure {
-                            ensureActive()
-                            it.printStackTrace()
-                        }.onSuccess {
+                        }.collect {
                             updateState {
-                                copy(
-                                    alertsResource =
-                                        alertsResource.getDataOrNull()
-                                            ?.let { previousAlerts ->
-                                                Resource.Success(
-                                                    previousAlerts.filter {
-                                                        it.id != event.alertId
-                                                    },
-                                                )
-                                            } ?: alertsResource,
-                                )
+                                if (it is Resource.Success) {
+                                    copy(
+                                        actionResource = null,
+                                        alertsResource =
+                                            alertsResource.getDataOrNull()
+                                                ?.let { previousAlerts ->
+                                                    Resource.Success(
+                                                        previousAlerts.filter {
+                                                            it.id != event.alertId
+                                                        },
+                                                    )
+                                                } ?: alertsResource,
+                                    )
+                                } else {
+                                    copy(actionResource = it)
+                                }
                             }
-                        }
-
-                        updateState {
-                            copy(isActionInProgress = false)
                         }
                     }
                 }

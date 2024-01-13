@@ -5,7 +5,7 @@ import com.pawlowski.temperaturemanager.domain.models.AlertDomain
 
 data class AlertsState(
     val alertsResource: Resource<List<AlertDomain>>,
-    val isActionInProgress: Boolean = false,
+    val actionResource: Resource<Unit>? = null,
 )
 
 sealed interface AlertsEvent {
