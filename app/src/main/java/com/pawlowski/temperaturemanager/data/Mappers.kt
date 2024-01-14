@@ -39,8 +39,8 @@ fun List<Reading>.toDomain(): List<ReadingDomain> =
 
 fun Reading.toDomain(): ReadingDomain =
     ReadingDomain(
-        temperature = temperature,
-        soilMoisture = soilMoisture,
+        temperature = value.takeIf { type == "TEMPERATURE" },
+        soilMoisture = value.takeIf { type == "SOIL_MOISTURE" },
         measuredAt = measuredAt,
     )
 

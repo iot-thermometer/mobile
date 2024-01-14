@@ -29,4 +29,16 @@ class GetReadingsUseCase
     )*/
             thermometerDataProvider
                 .listReadings(deviceId = deviceId)
+                .groupBy {
+                    it.measuredAt
+                }.map {
+                    val readingsForTimestamp = it.value
+                    val temp = readingsForTimestamp.firstNotNullOfOrNull { it.temperature }
+                    val soil = readingsForTimestamp.firstNotNullOfOrNull { it.soilMoisture }
+                    ReadingDomain(
+                        temperature = temp,
+                        soilMoisture = soil,
+                        measuredAt = it.key,
+                    )
+                }
     }

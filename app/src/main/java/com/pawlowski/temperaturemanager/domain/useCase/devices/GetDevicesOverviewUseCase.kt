@@ -17,19 +17,23 @@ class GetDevicesOverviewUseCase
             return coroutineScope {
                 thermometerDataProvider.listDevices().map {
                     async {
-                        val lastReading =
+                        val lastPair =
                             runCatching {
                                 thermometerDataProvider.listReadings(
                                     deviceId = it.id,
-                                ).firstOrNull()
+                                ).let {
+                                    val lastTemp = it.firstNotNullOfOrNull { it.temperature }
+                                    val lastSoil = it.firstNotNullOfOrNull { it.soilMoisture }
+                                    lastTemp to lastSoil
+                                }
                             }.onFailure {
                                 ensureActive()
                                 it.printStackTrace()
                             }.getOrNull()
                         DeviceWithOverview(
                             device = it,
-                            currentSoilMoisture = lastReading?.soilMoisture?.toInt(),
-                            currentTemperature = lastReading?.temperature?.toInt(),
+                            currentSoilMoisture = lastPair?.second?.toInt(),
+                            currentTemperature = lastPair?.first?.toInt(),
                         )
                     }
                 }.awaitAll()

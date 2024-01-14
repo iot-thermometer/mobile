@@ -2,18 +2,23 @@ package com.pawlowski.temperaturemanager.ui.screens.readings
 
 import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 
-sealed interface ReadingsState {
-    object Loading : ReadingsState
+data class ReadingsState(
+    val amIOwner: Boolean,
+    val contentState: ContentState,
+) {
+    sealed interface ContentState {
+        object Loading : ContentState
 
-    object Empty : ReadingsState
+        object Empty : ContentState
 
-    object Error : ReadingsState
+        object Error : ContentState
 
-    data class Content(
-        val lastTemperature: Int,
-        val lastSoilMoisture: Int?,
-        val readings: Map<String, List<ReadingDomain>>,
-    ) : ReadingsState
+        data class Content(
+            val lastTemperature: Int?,
+            val lastSoilMoisture: Int?,
+            val readings: Map<String, List<ReadingDomain>>,
+        ) : ContentState
+    }
 }
 
 sealed interface ReadingsEvent {

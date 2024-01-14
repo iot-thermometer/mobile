@@ -39,6 +39,7 @@ import com.pawlowski.temperaturemanager.domain.models.ReadingDomain
 import com.pawlowski.temperaturemanager.ui.components.ErrorItem
 import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheet
+import com.pawlowski.temperaturemanager.ui.screens.readings.ReadingsState.ContentState
 import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
 import java.util.Date
 
@@ -65,20 +66,29 @@ fun ReadingsScreen(
                     },
                 ),
             trailing =
-                Toolbar.ToolbarTrailing.DoubleIcon(
-                    iconId1 = R.drawable.add_people,
-                    onClick1 = {
-                        showShareBottomSheet.value = true
-                    },
-                    iconId2 = R.drawable.settings,
-                    onClick2 = {
-                        onEvent(ReadingsEvent.SettingsClick)
-                    },
-                ),
+                if (state.amIOwner) {
+                    Toolbar.ToolbarTrailing.DoubleIcon(
+                        iconId1 = R.drawable.add_people,
+                        onClick1 = {
+                            showShareBottomSheet.value = true
+                        },
+                        iconId2 = R.drawable.settings,
+                        onClick2 = {
+                            onEvent(ReadingsEvent.SettingsClick)
+                        },
+                    )
+                } else {
+                    Toolbar.ToolbarTrailing.Icon(
+                        iconId = R.drawable.add_people,
+                        onClick = {
+                            showShareBottomSheet.value = true
+                        },
+                    )
+                },
         )
 
-        when (state) {
-            is ReadingsState.Loading -> {
+        when (state.contentState) {
+            is ContentState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -87,7 +97,7 @@ fun ReadingsScreen(
                 }
             }
 
-            is ReadingsState.Content -> {
+            is ContentState.Content -> {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
                 ) {
@@ -96,7 +106,10 @@ fun ReadingsScreen(
                             horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
                         ) {
                             ReadingCircle(
-                                mainText = "${state.lastTemperature}°C",
+                                mainText =
+                                    state.contentState.lastTemperature?.let { lastTemperature ->
+                                        "$lastTemperature°C"
+                                    } ?: "-",
                                 subText = null,
                                 label = "Temperature",
                                 contentColor = Color(0xFFDE3730),
@@ -104,7 +117,10 @@ fun ReadingsScreen(
                             )
 
                             ReadingCircle(
-                                mainText = "${state.lastSoilMoisture}%",
+                                mainText =
+                                    state.contentState.lastSoilMoisture?.let { lastSoilMoisture ->
+                                        "$lastSoilMoisture%"
+                                    } ?: "-",
                                 subText = "[kg/kg]",
                                 label = "Soil Moisture",
                                 contentColor = Color(0xFF355CA8),
@@ -116,7 +132,7 @@ fun ReadingsScreen(
                     }
 
                     LazyColumn {
-                        items(state.readings.toList()) { (day, readings) ->
+                        items(state.contentState.readings.toList()) { (day, readings) ->
                             ReadingsSection(
                                 day = day,
                                 readings = readings,
@@ -126,7 +142,7 @@ fun ReadingsScreen(
                 }
             }
 
-            ReadingsState.Empty -> {
+            ContentState.Empty -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -135,7 +151,7 @@ fun ReadingsScreen(
                 }
             }
 
-            ReadingsState.Error -> {
+            ContentState.Error -> {
                 ErrorItem(
                     onRetry = {
                         onEvent(ReadingsEvent.RetryClick)
@@ -238,7 +254,13 @@ private fun ReadingsSection(
                     contentDescription = null,
                     modifier = Modifier.size(size = 20.dp),
                 )
-                ReadingsCard(text = "${it.temperature}°C", color = Color(0xFFDE3730))
+                ReadingsCard(
+                    text =
+                        it.temperature?.let { temperature ->
+                            "$temperature°C"
+                        } ?: "-",
+                    color = Color(0xFFDE3730),
+                )
 
                 Icon(
                     imageVector = Icons.Filled.WaterDrop,
@@ -247,7 +269,10 @@ private fun ReadingsSection(
                 )
 
                 ReadingsCard(
-                    text = "${it.soilMoisture.toInt()}%",
+                    text =
+                        it.soilMoisture?.let { soilMoisture ->
+                            "${soilMoisture.toInt()}%"
+                        } ?: "-",
                     color = Color(0xFF355CA8),
                     subtitle = "[kg/kg]",
                 )
