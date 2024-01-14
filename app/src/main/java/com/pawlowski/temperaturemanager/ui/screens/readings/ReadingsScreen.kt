@@ -41,6 +41,7 @@ import com.pawlowski.temperaturemanager.ui.components.Toolbar
 import com.pawlowski.temperaturemanager.ui.screens.bottomSheets.share.ShareBottomSheet
 import com.pawlowski.temperaturemanager.ui.screens.readings.ReadingsState.ContentState
 import com.pawlowski.temperaturemanager.ui.utils.formatHHmm
+import java.math.RoundingMode
 import java.util.Date
 
 @Composable
@@ -261,7 +262,7 @@ private fun ReadingsSection(
                 ReadingsCard(
                     text =
                         it.temperature?.let { temperature ->
-                            "$temperature°C"
+                            "${temperature.toBigDecimal().setScale(1, RoundingMode.FLOOR)}°C"
                         } ?: "-",
                     color = Color(0xFFDE3730),
                 )
