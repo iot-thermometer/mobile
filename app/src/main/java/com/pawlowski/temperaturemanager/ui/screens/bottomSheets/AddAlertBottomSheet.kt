@@ -168,10 +168,10 @@ fun AddAlertBottomSheet(
                     val minSoil = minSoilState.value.takeIf { isMinSoilEnabledState.value }
                     val maxSoil = maxSoilState.value.takeIf { isMaxSoilEnabledState.value }
 
-                    if (name.isNotBlank() && (minTemp == null || minTemp.isNotBlank()) &&
-                        (maxTemp == null || maxTemp.isNotBlank()) &&
-                        (minSoil == null || minSoil.isNotBlank()) &&
-                        (maxSoil == null || maxSoil.isNotBlank())
+                    if (name.isNotBlank() && (minTemp == null || minTemp.toFloatOrNull() != null) &&
+                        (maxTemp == null || maxTemp.toFloatOrNull() != null) &&
+                        (minSoil == null || minSoil.toFloatOrNull() != null) &&
+                        (maxSoil == null || maxSoil.toFloatOrNull() != null)
                     ) {
                         hideBottomSheetWithAction {
                             onConfirm(
@@ -241,7 +241,7 @@ private fun CheckBoxWithInput(
                 KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                 ),
-            isError = value.isBlank() && showErrorIfAny,
+            isError = (value.isBlank() || value.toFloatOrNull() == null) && showErrorIfAny,
             modifier = Modifier.fillMaxWidth(),
         )
     }
