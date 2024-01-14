@@ -41,7 +41,7 @@ fun Reading.toDomain(): ReadingDomain =
     ReadingDomain(
         temperature = value.takeIf { type == "TEMPERATURE" },
         soilMoisture = value.takeIf { type == "SOIL_MOISTURE" },
-        measuredAt = measuredAt,
+        measuredAt = measuredAt * 1000L,
     )
 
 fun Ownership.toDomain(): Member =

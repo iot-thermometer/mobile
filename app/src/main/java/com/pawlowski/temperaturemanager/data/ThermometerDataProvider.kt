@@ -16,6 +16,7 @@ import com.thermometer.proto.ListAlertsRequest
 import com.thermometer.proto.ListDevicesRequest
 import com.thermometer.proto.ListMembersRequest
 import com.thermometer.proto.ListReadingsRequest
+import com.thermometer.proto.OwnershipRole
 import com.thermometer.proto.RemoveMemberRequest
 import com.thermometer.proto.ThermometerServiceGrpcKt
 import com.thermometer.proto.UpdateDeviceRequest
@@ -46,6 +47,8 @@ class ThermometerDataProvider
                 request =
                     ListReadingsRequest.newBuilder()
                         .setId(deviceId)
+                        .setStart(0)
+                        .setEnd(Int.MAX_VALUE.toLong())
                         .build(),
             ).readingsList.toDomain()
         }
@@ -153,6 +156,7 @@ class ThermometerDataProvider
                     AddMemberRequest.newBuilder()
                         .setDeviceID(deviceId)
                         .setEmail(email)
+                        .setRole(OwnershipRole.Member)
                         .build(),
             )
         }

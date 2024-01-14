@@ -26,7 +26,7 @@ internal class NotificationsDataProvider
                 request =
                     AddPhoneRequest.newBuilder()
                         .setPushID(pushToken.deviceId)
-                        .setPushToken(pushToken.deviceId)
+                        .setPushToken(pushToken.token)
                         .build(),
             ).also {
                 println("Sent token $pushToken")
