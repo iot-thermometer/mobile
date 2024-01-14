@@ -26,7 +26,7 @@ fun Device.toDomain(): DeviceDomain =
     DeviceDomain(
         id = id,
         name = name,
-        recentlySeenAt = recentlySeenAt.takeIf { it != 0L },
+        recentlySeenAt = recentlySeenAt.takeIf { it != 0L }?.let { it * 1000L },
         pushInterval = pushInterval,
         readingInterval = readingInterval,
         token = token,
