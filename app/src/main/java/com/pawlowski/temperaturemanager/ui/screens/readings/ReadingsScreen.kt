@@ -78,10 +78,14 @@ fun ReadingsScreen(
                         },
                     )
                 } else {
-                    Toolbar.ToolbarTrailing.Icon(
-                        iconId = R.drawable.add_people,
-                        onClick = {
+                    Toolbar.ToolbarTrailing.DoubleIcon(
+                        iconId1 = R.drawable.add_people,
+                        onClick1 = {
                             showShareBottomSheet.value = true
+                        },
+                        iconId2 = R.drawable.notification,
+                        onClick2 = {
+                            onEvent(ReadingsEvent.AlertsClick)
                         },
                     )
                 },

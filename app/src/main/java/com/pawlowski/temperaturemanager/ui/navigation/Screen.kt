@@ -76,6 +76,7 @@ sealed interface Screen {
             override val popUpToInclusive: Boolean = false,
         ) : Direction {
             DEVICE_SETTINGS(destination = DeviceSettings),
+            ALERTS(destination = Alerts),
         }
     }
 

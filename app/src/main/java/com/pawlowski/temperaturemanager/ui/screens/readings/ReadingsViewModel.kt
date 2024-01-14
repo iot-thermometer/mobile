@@ -116,6 +116,10 @@ internal class ReadingsViewModel
                 ReadingsEvent.RetryClick -> {
                     retrySharedFlow.sendRetryEvent()
                 }
+
+                ReadingsEvent.AlertsClick -> {
+                    pushNavigationEvent(ReadingsDirection.ALERTS)
+                }
             }
         }
     }

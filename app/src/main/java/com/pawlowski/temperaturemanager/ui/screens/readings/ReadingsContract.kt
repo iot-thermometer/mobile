@@ -26,5 +26,7 @@ sealed interface ReadingsEvent {
 
     object SettingsClick : ReadingsEvent
 
+    object AlertsClick : ReadingsEvent
+
     object RetryClick : ReadingsEvent
 }
